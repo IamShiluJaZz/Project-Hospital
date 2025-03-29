@@ -1,0 +1,181 @@
+{% load static %}
+<!doctype html>
+<html class="no-js" lang="zxx">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title> RIVERSHORE </title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Favicons -->
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'xyz/favicon_io/favicon-16x16.png' %}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'xyz/favicon_io/favicon-32x32.png' %}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{% static 'xyz/favicon_io/android-chrome-192x192.png' %}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{% static 'xyz/favicon_io/android-chrome-512x512.png' %}">
+    <link rel="apple-touch-icon" href="{% static 'xyz/favicon_io/apple-touch-icon.png' %}">
+    <link rel="manifest" href="{% static 'xyz/favicon_io/site.webmanifest' %}">
+    <!-- CSS here -->
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/owl.carousel.min.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/slicknav.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/flaticon.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/gijgo.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/animate.min.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/animated-headline.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/magnific-popup.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/fontawesome-all.min.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/slick.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/nice-select.css' %}">
+    <link rel="stylesheet" href="{% static 'xyz/assets/css/style.css' %}">
+</head>
+
+<body>
+    <!-- ? Preloader Start -->
+    <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="preloader-circle"></div>
+                <div class="preloader-img pere-text">
+                    <img src="{% static 'logo/hospital.png' %}" alt="" style="max-width: 90px;max-height: 90px;">
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Preloader Start -->
+    <header>
+        <div class="branding d-flex align-items-center">
+            <div class="container position-relative d-flex align-items-center justify-content-between" style="display: flex; align-items: center;">
+              <a href="" class="logo d-flex align-items-center me-auto" style="display: flex; align-items: center;">
+                  <img src="{% static 'patient/logo/logo.png' %}" 
+                  alt="Medilass Logo" style="margin-left: 0px; max-height: 85px; width: auto; display: block;">
+              </a>
+          </div>
+        <!--? Header Start -->
+        <div class="header-area">
+            <div class="main-header header-sticky">
+                <div class="container-fluid">
+                    <div class="row align-items-center" style="height: 75px;">
+                        <!-- Logo -->
+                        <div class="col-xl-2 col-lg-2 col-md-1">
+                            <div class="logo">
+                                <a href="index.html"><img src="{% static 'logo/hospital.png' %}" alt="" style="width: 150px;"></a>
+                            </div>
+                        </div>
+                        <div class="col-xl-10 col-lg-10 col-md-10">
+                            <div class="menu-main d-flex align-items-center justify-content-end">
+                            </div>
+                        </div>
+                        <!-- Mobile Menu -->
+                        <div class="col-12">
+                            <div class="mobile_menu d-block d-lg-none"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Header End -->
+    </header>
+    <main>
+        <!--? slider Area Start-->
+        <div class="slider-area position-relative" style="height: 650px;">
+            <div class="slider-active">
+                <!-- Single Slider -->
+                <div class="single-slider slider-height d-flex align-items-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xl-7 col-lg-9 col-md-8 col-sm-9">
+                                <div class="hero__caption">
+                                    <span>Welcome to Rivershore Hospital</span>
+                                    <h1 class="cd-headline letters scale">We care about your
+                                        <strong class="cd-words-wrapper">
+                                            <b class="is-visible">health</b>
+                                            <b>sushi</b>
+                                            <b>steak</b>
+                                        </strong>
+                                    </h1>
+                                    <!-- <a href="#" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Book
+                                        Now <i class="ti-arrow-right"></i></a> -->
+                                        <a href="{% url 'all_login' %}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Book Now
+                                            <i class="ti-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Single Slider -->
+                <div class="single-slider slider-height d-flex align-items-center">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-xl-7 col-lg-9 col-md-8 col-sm-9">
+                                <div class="hero__caption">
+                                    <span>Welcome to Rivershore Hospital</span>
+                                    <h1 class="cd-headline letters scale">We care about your
+                                        <strong class="cd-words-wrapper">
+                                            <b class="is-visible">health</b>
+                                            <b>sushi</b>
+                                            <b>steak</b>
+                                        </strong>
+                                    </h1>
+                                    <p data-animation="fadeInLeft" data-delay="0.1s">Ut enim ad minim veniam, quis
+                                        nostrud exercitation ullamco laboris nisi uquip ex ea commodo consequat is aute
+                                        irure.</p>
+                                    <a href="#" class="btn hero-btn" data-animation="fadeInLeft"
+                                        data-delay="0.5s">Appointment <i class="ti-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- gallery Products End -->
+        <!--? Blog start -->
+        <!-- Blog End -->
+    </main>
+
+    <!-- JS here -->
+
+    <script src="{% static 'xyz/assets/js/vendor/modernizr-3.5.0.min.js' %}"></script>
+    <!-- Jquery, Popper, Bootstrap -->
+    <script src="{% static 'xyz/assets/js/vendor/jquery-1.12.4.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/popper.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/bootstrap.min.js' %}"></script>
+    <!-- Jquery Mobile Menu -->
+    <script src="{% static 'xyz/assets/js/jquery.slicknav.min.js' %}"></script>
+
+    <!-- Jquery Slick , Owl-Carousel Plugins -->
+    <script src="{% static 'xyz/assets/js/owl.carousel.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/slick.min.js' %}"></script>
+    <!-- One Page, Animated-HeadLin -->
+    <script src="{% static 'xyz/assets/js/wow.min.js"></script>
+    <script src="{% static 'xyz/assets/js/animated.headline.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/jquery.magnific-popup.js' %}"></script>
+
+    <!-- Date Picker -->
+    <script src="{% static 'xyz/assets/js/gijgo.min.js' %}"></script>
+    <!-- Nice-select, sticky -->
+    <script src="{% static 'xyz/assets/js/jquery.nice-select.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/jquery.sticky.js' %}"></script>
+
+    <!-- counter , waypoint -->
+    <script src="{% static 'xyz/assets/js/jquery.counterup.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/waypoints.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/jquery.countdown.min.js' %}"></script>
+    <!-- contact js -->
+    <script src="{% static 'xyz/assets/js/contact.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/jquery.form.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/jquery.validate.min.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/mail-script.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/jquery.ajaxchimp.min.js' %}"></script>
+
+    <!-- Jquery Plugins, main Jquery -->
+    <script src="% static 'assets/js/plugins.js' %}"></script>
+    <script src="{% static 'xyz/assets/js/main.js' %}"></script>
+
+</body>
+
+</html>

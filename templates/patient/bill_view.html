@@ -1,0 +1,94 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <h2 class="text-primary text-center">Patient Bill Overview</h2>
+                    <h3 class="text-success text-center">Welcome, {{ patient.fk_user.username }}</h3>
+                    <p class="text-center">MR Number: <strong>{{ mr_no }}</strong></p>
+                    <p class="text-center">Payment Status: <strong>{{ payment_status }}</strong></p>
+
+                    <!-- Payment Button -->
+                    {% if payment_status == 'Pending' %}
+                    <div class="text-center">
+                        <a href="{% url 'dummy_payment' patient_id=patient_id %}?grand_total={{ grand_total }}" class="btn btn-success">
+                            Proceed to Payment (₹{{ grand_total }})
+                        </a>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-success text-center">
+                        Your payment has been completed.
+                    </div>
+                    {% endif %}
+
+                    <!-- Bill Details Table -->
+                    <div class="row mt-5">
+                        <!-- Lab Reports -->
+                        <div class="col-md-4">
+                            <h4 class="text-info">Lab Reports</h4>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr><th>Test Name</th><th>Price (₹)</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in lab_reports %}
+                                        <tr><td>{{ report.test.test_name }}</td><td>{{ report.test.price }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="2" class="text-center">No lab reports found.</td></tr>
+                                    {% endfor %}
+                                    <tr class="table-warning"><td>Total</td><td>₹{{ lab_total }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Radio Reports -->
+                        <div class="col-md-4">
+                            <h4 class="text-info">Radiology Reports</h4>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr><th>Test Name</th><th>Price (₹)</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in radio_reports %}
+                                        <tr><td>{{ report.test.test_name }}</td><td>{{ report.test.price }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="2" class="text-center">No radiology reports found.</td></tr>
+                                    {% endfor %}
+                                    <tr class="table-warning"><td>Total</td><td>₹{{ radio_total }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Medicines -->
+                        <div class="col-md-4">
+                            <h4 class="text-info">Medicines</h4>
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr><th>Medicine Name</th><th>Price (₹)</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for med in meds %}
+                                        <tr><td>{{ med.medicine_name.medicine_name }}</td><td>{{ med.price }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="2" class="text-center">No medicines found.</td></tr>
+                                    {% endfor %}
+                                    <tr class="table-warning"><td>Total</td><td>₹{{ med_total }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Grand Total Section -->
+                    <div class="mt-4 text-center">
+                        <h4 class="text-primary">Grand Total: ₹{{ grand_total }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

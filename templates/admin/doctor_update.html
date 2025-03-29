@@ -1,0 +1,190 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Doctor</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-4">
+        <h2 class="mb-4">Update Doctor Details</h2>
+
+        {% if errors %}
+            <div class="alert alert-danger">
+                <ul>
+                    {% for error in errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <table class="table table-bordered">
+                <tr>
+                    <th>Full Name</th>
+                    <td><input type="text" class="form-control" name="username" value="{{ doctor.fk_user.username }}" required></td>
+                </tr>
+                <tr>
+                    <th>Email</th>
+                    <td><input type="email" class="form-control" name="email" value="{{ doctor.fk_user.email }}" required></td>
+                </tr>
+                <tr>
+                    <th>Phone</th>
+                    <td><input type="text" class="form-control" name="phone" value="{{ doctor.fk_user.phone }}" required></td>
+                </tr>
+                <tr>
+                    <tr>
+                        <th>Department</th>
+                        <td>
+                            <select class="form-control" name="fk_dep" required>
+                                {% for dep in departments %}
+                                    <option value="{{ dep.id }}" {% if dep.id == doctor.fk_dep.id %} selected {% endif %}>
+                                        {{ dep.specialization_name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                    </tr>
+                    
+                <tr>
+                    <th>Title</th>
+                    <td>
+                        <select class="form-control" name="title">
+                            {% for value, label in doctor.TITLE_CHOICES %}
+                                <option value="{{ value }}" {% if value == doctor.title %} selected {% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>
+                        <select class="form-control" name="gender">
+                            {% for value, label in doctor.GENDER_CHOICES %}
+                                <option value="{{ value }}" {% if value == doctor.gender %} selected {% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Marital Status</th>
+                    <td>
+                        <select class="form-control" name="marital_status">
+                            {% for value, label in doctor.MARITAL_STATUS_CHOICES %}
+                                <option value="{{ value }}" {% if value == doctor.marital_status %} selected {% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Address</th>
+                    <td><textarea class="form-control" name="address">{{ doctor.address }}</textarea></td>
+                </tr>
+                <tr>
+                    <th>Date of Birth</th>
+                    <td><input type="date" class="form-control" name="date_of_birth" value="{{ doctor.date_of_birth|date:'Y-m-d' }}"></td>
+                </tr>
+                <tr>
+                    <th>Joining Date</th>
+                    <td><input type="date" class="form-control" name="joining_date" value="{{ doctor.joining_date|date:'Y-m-d' }}"></td>
+                </tr>
+                <tr>
+                    <th>Resignation Date</th>
+                    <td><input type="date" class="form-control" name="resignation_date" value="{{ doctor.resignation_date|date:'Y-m-d' }}"></td>
+                </tr>
+                <tr>
+                    <th>Rejoining Date</th>
+                    <td><input type="date" class="form-control" name="rejoining_date" value="{{ doctor.rejoining_date|date:'Y-m-d' }}"></td>
+                </tr>
+                <tr>
+                    <th>Qualifications</th>
+                    <td><textarea class="form-control" name="qualifications">{{ doctor.qualifications }}</textarea></td>
+                </tr>
+                <tr>
+                    <th>Experience (Years)</th>
+                    <td><input type="number" class="form-control" name="experience_years" value="{{ doctor.experience_years }}"></td>
+                </tr>
+                <tr>
+                    <th>Medical Registration Number</th>
+                    <td><input type="text" class="form-control" name="medical_registration_number" value="{{ doctor.medical_registration_number }}"></td>
+                </tr>
+                <tr>
+                    <th>Status</th>
+                    <td>
+                        <select class="form-control" name="user_status">
+                            {% for value, label in doctor.STATUS_CHOICES %}
+                                <option value="{{ value }}" {% if value == doctor.user_status %} selected {% endif %}>
+                                    {{ label }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+
+                <!-- File Uploads -->
+                <tr>
+                    <th>Profile Image</th>
+                    <td>
+                        {% if doctor.image %}
+                            <img src="{{ doctor.image.url }}" alt="Profile Image" class="img-thumbnail" width="150">
+                        {% endif %}
+                        <input type="file" class="form-control mt-2" name="image">
+                    </td>
+                </tr>
+                <tr>
+                    <th>ID Proof</th>
+                    <td>
+                        {% if doctor.id_proof %}
+                            <a href="{{ doctor.id_proof.url }}" target="_blank">View ID Proof</a>
+                        {% endif %}
+                        <input type="file" class="form-control mt-2" name="id_proof">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Qualification Certificate</th>
+                    <td>
+                        {% if doctor.qualification_certificate %}
+                            <a href="{{ doctor.qualification_certificate.url }}" target="_blank">View Qualification Certificate</a>
+                        {% endif %}
+                        <input type="file" class="form-control mt-2" name="qualification_certificate">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Experience Certificate</th>
+                    <td>
+                        {% if doctor.experience_certificate %}
+                            <a href="{{ doctor.experience_certificate.url }}" target="_blank">View Experience Certificate</a>
+                        {% endif %}
+                        <input type="file" class="form-control mt-2" name="experience_certificate">
+                    </td>
+                </tr>
+                <tr>
+                    <th>Medical Registration Certificate</th>
+                    <td>
+                        {% if doctor.medical_registration_certificate %}
+                            <a href="{{ doctor.medical_registration_certificate.url }}" target="_blank">View Medical Registration Certificate</a>
+                        {% endif %}
+                        <input type="file" class="form-control mt-2" name="medical_registration_certificate">
+                    </td>
+                </tr>
+            </table>
+            
+            <button type="submit" class="btn btn-primary">Update</button>
+            <a href="{% url 'list_all_doctors' %}" class="btn btn-secondary">Back to List</a>
+        </form>
+    </div>
+</body>
+</html>
+{% endblock %}

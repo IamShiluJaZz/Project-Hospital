@@ -1,0 +1,218 @@
+{% extends 'doctor/doctor_lay.html' %}
+{% load static %}
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <div class="card shadow-lg p-4">
+                        <div class="header_logo text-center">
+                            <img src="{% static 'admin/images/hospital.png' %}" alt="Hospital Logo" style="max-width: 250px;">
+                        </div><br>
+                        <h3 class="text-center mb-4">Edit Prescription</h3>
+                        {% if messages %}
+  <div class="alert alert-dismissible fade show {% if messages.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}" role="alert">
+    {% for message in messages %}
+      {{ message }}
+    {% endfor %}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+{% endif %}
+
+
+                        <form method="post" id="prescriptionForm">
+                            {% csrf_token %}
+                            <input type="hidden" name="patient_id" value="{{ main_prescription.patient_id }}">
+                            <input type="hidden" name="date" value="{{ main_prescription.date|date:'Y-m-d' }}">
+                            
+                            <div class="card p-3 mb-4">
+                                <h5 class="text-primary mb-3">🩺 Patient Details</h5>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Patient ID (MR No):</label>
+                                    <input type="text" class="form-control" value="{{ main_prescription.patient_id }}" readonly>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Patient Name:</label>
+                                    <input type="text" name="patient_name" class="form-control" value="{{ main_prescription.patient_name }}" readonly>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">Age:</label>
+                                    <input type="number" name="age" class="form-control" value="{{ main_prescription.age }}" required>
+                                </div>
+                            </div>
+
+                            <div class="card p-3 mb-4">
+                                <h5 class="text-primary">💊 Medicine to be Prescribed</h5>
+                                <div id="medicine-container" class="mt-4">
+                                    {% for prescription in prescriptions %}
+                                    <div class="row mb-3 medicine-row d-flex align-items-end gap-4">
+                                        <div class="col-md-2">
+                                            <label class="form-label">Medicine:</label>
+                                            <select name="medicine[]" class="form-select" required>
+                                                <option value="">Select Medicine</option>
+                                                {% for med in medicines %}
+                                                    <option value="{{ med.id }}" {% if med.id == prescription.medicine.id %}selected{% endif %}>
+                                                        {{ med.medicine_name.medicine_name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="form-label">Category:</label>
+                                            <select name="category[]" class="form-select" required>
+                                                <option value="">Select Category</option>
+                                                {% for category in categories %}
+                                                    <option value="{{ category.id }}" {% if category.id == prescription.category.id %}selected{% endif %}>
+                                                        {{ category.cat_name }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="form-label">Qty:</label>
+                                            <input type="number" name="quantity[]" class="form-control" value="{{ prescription.quantity }}" required>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="form-label">Frequency:</label>
+                                            <select name="frequency[]" class="form-select" required>
+                                                <option value="">Select Frequency</option>
+                                                {% for value, label in frequency_choices %}
+                                                    <option value="{{ value }}" {% if value == prescription.frequency %}selected{% endif %}>
+                                                        {{ label }}
+                                                    </option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            {% if forloop.first %}
+                                                <button type="button" class="btn btn-success add-row">+</button>
+                                            {% else %}
+                                                <button type="button" class="btn btn-danger remove-row">-</button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                                
+                            <div class="card p-2 mb-4">
+                                <h5 class="text-primary">🧪 Tests to be Done</h5><br>
+                                <div class="row"><br>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Lab Tests (Optional):</label>
+                                        <select name="lab[]" class="form-select" multiple>
+                                            {% for lab in labs %}
+                                                <option value="{{ lab.id }}" {% if lab in all_labs %}selected{% endif %}>
+                                                    {{ lab.test_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select><br>
+                                        <small class="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+                                    </div><br><br>
+                            
+                                    <div class="col-md-2">
+                                        <label class="form-label">Radio Tests (Optional):</label>
+                                        <select name="radio[]" class="form-select" multiple>
+                                            {% for radio in radios %}
+                                                <option value="{{ radio.id }}" {% if radio in all_radios %}selected{% endif %}>
+                                                    {{ radio.test_name }}
+                                                </option>
+                                            {% endfor %}
+                                        </select><br>
+                                        <small class="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+                                    </div>
+                                </div><br>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Note:</label>
+                                <textarea name="note" class="form-control" rows="3">{{ main_prescription.note }}</textarea>
+                            </div>
+
+                            <div class="text-center mt-4">
+                                <button type="submit" class="btn btn-primary">Update Prescription</button>
+                                <a href="{% url 'list_prescriptions' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    // Dynamic Medicine Row Add/Remove
+    const container = document.getElementById("medicine-container");
+    
+    
+    document.addEventListener("click", function (event) {
+        if (event.target.classList.contains("add-row")) {
+            event.preventDefault();
+            const row = event.target.closest(".medicine-row");
+            const newRow = row.cloneNode(true);
+            
+            newRow.querySelectorAll("input, select").forEach(field => {
+                if (field.tagName === "INPUT") field.value = "";
+                else if (field.tagName === "SELECT") field.selectedIndex = 0;
+            });
+            
+            const button = newRow.querySelector(".add-row");
+            button.classList.replace("btn-success", "btn-danger");
+            button.classList.replace("add-row", "remove-row");
+            button.textContent = "-";
+            
+            container.appendChild(newRow);
+        }
+        
+        if (event.target.classList.contains("remove-row")) {
+            event.preventDefault();
+            if (container.querySelectorAll(".medicine-row").length > 1) {
+                event.target.closest(".medicine-row").remove();
+            } else {
+                alert("At least one medicine row is required.");
+            }
+        }
+    });
+
+    // Form validation
+    const form = document.getElementById("prescriptionForm");
+    form.addEventListener("submit", function(event) {
+        const medicineRows = document.querySelectorAll(".medicine-row");
+        let isValid = true;
+        
+        medicineRows.forEach(row => {
+            const medicine = row.querySelector("[name='medicine[]']").value;
+            const quantity = row.querySelector("[name='quantity[]']").value;
+            
+            if (!medicine || !quantity || parseInt(quantity) <= 0) {
+                isValid = false;
+            }
+        });
+        
+        if (!isValid) {
+            event.preventDefault();
+            alert("Please fill all medicine fields with valid quantities.");
+        }
+    });
+});
+
+document.getElementById('prescriptionForm').addEventListener('submit', function() {
+  const submitButton = this.querySelector("button[type='submit']");
+  submitButton.disabled = true;
+  submitButton.innerHTML = "Updating...";
+});
+
+</script>
+
+{% endblock %}

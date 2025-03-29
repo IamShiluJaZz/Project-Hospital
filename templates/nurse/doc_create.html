@@ -1,0 +1,65 @@
+{% extends 'nurse/nurse_lay.html' %}
+{% load static %}
+{% block content %}
+
+<h2 class="text-center my-4">Create Documentation for Patient</h2>
+<div class="d-flex justify-content-center align-items-center" style="min-height: 80vh;">
+    <div class="col-md-6 col-lg-5 col-sm-8">
+        <div class="card shadow-lg">
+            <div class="card-body p-4">
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label for="ward_assignment" class="form-label">Select Patient:</label>
+                        <select name="ward_assignment" class="form-control" >
+                            <option value="">Select Patient</option>
+                            {% for ward in ward_assignments %}
+                            <option value="{{ ward.id }}">{{ ward.prescription.patient_id }} - {{ ward.ward }} - Bed {{ ward.bed_number }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Temperature (°C):</label>
+                        <input type="number" min="0.1" name="temperature" class="form-control" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Heart Rate (bpm):</label>
+                        <input type="number" min="1" name="heart_rate" class="form-control" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Blood Pressure (mmHg):</label>
+                        <input type="text" min="1" name="blood_pressure" class="form-control" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Respiratory Rate (breaths/min):</label>
+                        <input type="number" min="1" name="respiratory_rate" class="form-control" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Oxygen Level (%):</label>
+                        <input type="number" min="1" name="oxygen_level" class="form-control" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Discharge Date:</label>
+                        <input type="date" name="discharge_date" class="form-control" >
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Additional Notes:</label>
+                        <textarea name="notes" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

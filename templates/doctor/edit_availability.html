@@ -1,0 +1,147 @@
+
+
+{% extends 'doctor/doctor_lay.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="container"><br><br>
+                <div class="row">
+                    <div class="card add-task-card">
+                        <div class="card-header">
+                            <div class="d-flex justify-content-between w-100 align-items-center">
+                                <!-- Button on the left side
+                                <button class="btn btn-card btn-primary" style="margin-left: 10px;">
+                                    <a href="{% url 'view_availability' %}">List</a>
+                                </button> -->
+                            </div>
+                            <div class="d-flex justify-content-center w-100">
+                                <!-- Heading in the center -->
+                                <h3 class="mb-3" style="margin: 0;"><b>Edit Availability Form</b></h3>
+                            </div>
+                        </div>
+                        
+                        <div class="card-block">
+                            <!-- Insert the Doctor Availability Form Here -->
+                            <div class="container mt-4">
+                                <!-- Increase the width of the form here -->
+                                <div class="card shadow p-4" style="max-width: 800px; margin: auto;">
+                                    <form method="post">
+                                        {% csrf_token %}
+
+                                        <div class="mb-3">
+                                            <label for="start_date" class="form-label">Start Date:</label>
+                                            <input type="date" id="start_date" name="start_date" class="form-control" value="{{ availability.start_date|date:'Y-m-d' }}" required>
+
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label for="end_date" class="form-label">End Date:</label>
+                                            <input type="date" id="end_date" name="end_date" class="form-control" value="{{ availability.end_date|date:'Y-m-d' }}" required>
+
+                                        </div>
+
+                                        <div class="mb-3">
+                                            <label class="form-label">Shift:</label>
+                                            <select name="shift" class="form-select" required>
+                                                <option value="morning" {% if availability.shift == 'morning' %}selected{% endif %}>Morning (9:00 AM - 12:00 PM)</option>
+                                                <option value="noon" {% if availability.shift == 'noon' %}selected{% endif %}>Noon (1:00 PM - 3:30 PM)</option>
+                                                <option value="evening" {% if availability.shift == 'evening' %}selected{% endif %}>Evening (4:00 PM - 7:00 PM)</option>
+                                                <option value="night" {% if availability.shift == 'night' %}selected{% endif %}>Night (8:00 PM - 11:00 PM)</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="form-label">Select Available Days:</label>
+                                        <div class="mb-3 d-flex flex-wrap gap-3">
+                                            {% for day, label in day_choices %}
+                                            <div class="form-check form-check-inline" style="margin-left: 25px;">
+                                                <input class="form-check-input" type="checkbox" name="days" value="{{ day }}" {% if day in selected_days %}checked{% endif %}>
+                                                <label class="form-check-label">{{ label }}</label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+
+
+                                        </div><br>
+
+                                        <div class="text-center">
+                                            <button type="submit" class="btn btn-primary">Update Availability</button>
+                                            <a href="{% url 'view_availability' %}" class="btn btn-secondary">Cancel</a>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <!-- End of Doctor Availability Form -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+   document.addEventListener("DOMContentLoaded", function() {
+    const form = document.querySelector('form');
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    const checkboxes = document.querySelectorAll('input[name="days"]');
+    const shiftSelect = document.querySelector('select[name="shift"]');
+
+    // Disable past dates for Start Date
+    const today = new Date();
+    startDateInput.min = today.toISOString().split('T')[0];
+
+    // Dynamic validation on Start Date change
+    startDateInput.addEventListener('change', function() {
+        const startDate = new Date(startDateInput.value);
+        const maxEndDate = new Date(startDate);
+        maxEndDate.setMonth(maxEndDate.getMonth() + 1);
+
+        endDateInput.min = startDate.toISOString().split('T')[0];
+        endDateInput.max = maxEndDate.toISOString().split('T')[0];
+    });
+
+    // Form Submit Validation
+    form.addEventListener('submit', function(event) {
+        const startDate = new Date(startDateInput.value);
+        const endDate = new Date(endDateInput.value);
+
+        // Validate Start Date
+        if (startDate < today) {
+            alert("Start date cannot be in the past.");
+            event.preventDefault();
+            return;
+        }
+
+        // Validate End Date
+        if (endDate < startDate || (endDate - startDate) / (1000 * 60 * 60 * 24) > 31) {
+            alert("End date must be within one month from the start date.");
+            event.preventDefault();
+            return;
+        }
+
+        // Validate Shift Selection
+        if (!shiftSelect.value) {
+            alert("Please select a shift.");
+            event.preventDefault();
+            return;
+        }
+
+        // Validate at least one day selection
+        const isChecked = Array.from(checkboxes).some(checkbox => checkbox.checked);
+        if (!isChecked) {
+            alert("Please select at least one available day.");
+            event.preventDefault();
+        }
+    });
+});
+
+</script>
+
+
+{% endblock %}
+
+

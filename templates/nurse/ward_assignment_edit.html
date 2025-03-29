@@ -1,0 +1,248 @@
+{% extends 'nurse/nurse_lay.html' %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 1000px;"><br>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+          <h2 class="mb-0">Edit Ward Assignment</h2>
+        </div>
+        <div class="card-body">
+          <form method="POST" class="needs-validation" novalidate id="wardForm">
+            {% csrf_token %}
+            <input type="hidden" name="ward_assignment_id" value="{{ ward_assignment.id }}">
+            
+            <!-- Row 1: Patient and Ward -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="prescription" class="form-label">Patient (MR No):</label>
+                <input type="text" id="patient_id_display" class="form-control" value="{{ ward_assignment.prescription.patient_id }}" readonly>
+                <input type="hidden" name="prescription" value="{{ ward_assignment.prescription.id }}">
+              </div>
+              <div class="col-md-6">
+                <label for="ward" class="form-label">Select Ward:</label>
+                <select name="ward" id="ward" class="form-select" required>
+                  <option value="" disabled>Select Ward</option>
+                  {% for ward_code, ward_label in wards %}
+                  <option value="{{ ward_code }}" {% if ward_assignment.ward == ward_code %}selected{% endif %}>{{ ward_label }}</option>
+                  {% endfor %}
+                </select>
+                <div class="invalid-feedback" id="ward-error">
+                  Please select a ward.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Row 1b: Display Patient and Doctor Details -->
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label class="form-label">Patient Name:</label>
+                <input type="text" id="patient_name" class="form-control" value="{{ ward_assignment.prescription.patient_name }}" readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Doctor Name:</label>
+                <input type="text" id="doctor_name" class="form-control" value="{{ ward_assignment.prescription.fk_user.title }}. {{ ward_assignment.prescription.fk_user.fk_user.username }}" readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Department:</label>
+                <input type="text" id="department" class="form-control" value="{{ ward_assignment.prescription.fk_user.fk_dep.specialization_name }}" readonly>
+              </div>
+            </div>
+
+            <!-- Row 2: Bed Number and Assigned Nurse -->
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label for="bed_number" class="form-label">Bed Number:</label>
+                <input type="text" name="bed_number" id="bed_number" class="form-control" value="{{ ward_assignment.bed_number }}" required>
+                <div class="invalid-feedback" id="bed-number-error">
+                  Please enter a bed number.
+                </div>
+              </div>
+              <div class="col-md-5">
+                <label for="assigned_nurse" class="form-label">Assigned Nurse:</label>
+                <select name="assigned_nurse" id="assigned_nurse" class="form-select" required>
+                  <option value="" disabled>Select Nurse</option>
+                  {% for nurse in nurses %}
+                  <option value="{{ nurse.id }}" {% if ward_assignment.assigned_nurse.id == nurse.id %}selected{% endif %}>{{ nurse }}</option>
+                  {% endfor %}
+                </select>
+                <div class="invalid-feedback" id="nurse-error">
+                  Please select a nurse.
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 3: Admission Date and Admission Reason -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="admission_date" class="form-label">Admission Date:</label>
+                <input type="date" name="admission_date" id="admission_date" class="form-control" value="{{ admission_date_formatted }}" required>
+                <div class="invalid-feedback" id="admission-date-error">
+                  Please select a valid admission date.
+                </div>
+              </div>
+              <div class="col-md-5">
+                <label for="admission_reason" class="form-label">Admission Reason:</label>
+                <textarea name="admission_reason" id="admission_reason" class="form-control" rows="1" required>{{ ward_assignment.admission_reason }}</textarea>
+                <div class="invalid-feedback" id="admission-reason-error">
+                  Please provide a reason for admission.
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 4: Additional Notes (full width) -->
+            <div class="mb-3">
+              <label for="additional_notes" class="form-label">Additional Notes:</label>
+              <textarea name="additional_notes" id="additional_notes" class="form-control" rows="3">{{ ward_assignment.additional_notes }}</textarea>
+            </div>
+
+            <!-- Submit and Cancel Buttons -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-success px-4">Update</button>
+              <a href="{% url 'ward_assignment_list' %}" class="btn btn-secondary px-4 ms-2">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Initialize all validations
+    initValidations();
+    
+    // Set minimum date for admission date
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('admission_date').setAttribute('min', today);
+});
+
+function initValidations() {
+    // Get all form elements
+    const form = document.getElementById('wardForm');
+    const wardSelect = document.getElementById('ward');
+    const bedNumberInput = document.getElementById('bed_number');
+    const nurseSelect = document.getElementById('assigned_nurse');
+    const admissionDateInput = document.getElementById('admission_date');
+    const admissionReasonInput = document.getElementById('admission_reason');
+    
+    // Get error elements
+    const wardError = document.getElementById('ward-error');
+    const bedNumberError = document.getElementById('bed-number-error');
+    const nurseError = document.getElementById('nurse-error');
+    const admissionDateError = document.getElementById('admission-date-error');
+    const admissionReasonError = document.getElementById('admission-reason-error');
+    
+    // Initial state - hide errors for pre-filled fields
+    if (wardSelect.value) wardError.style.display = 'none';
+    if (bedNumberInput.value) bedNumberError.style.display = 'none';
+    if (nurseSelect.value) nurseError.style.display = 'none';
+    if (admissionDateInput.value) admissionDateError.style.display = 'none';
+    if (admissionReasonInput.value) admissionReasonError.style.display = 'none';
+    
+    // Ward selection validation
+    wardSelect.addEventListener('change', function() {
+        wardError.style.display = this.value ? 'none' : 'block';
+    });
+    
+    // Bed number validation
+    bedNumberInput.addEventListener('input', function() {
+        if (this.value.trim() === '') {
+            bedNumberError.style.display = 'block';
+            bedNumberError.textContent = 'Please enter a bed number.';
+        } else {
+            bedNumberError.style.display = 'none';
+            checkBedAvailability();
+        }
+    });
+    
+    // Nurse selection validation
+    nurseSelect.addEventListener('change', function() {
+        nurseError.style.display = this.value ? 'none' : 'block';
+    });
+    
+    // Admission date validation
+    admissionDateInput.addEventListener('change', function() {
+        if (!this.value) {
+            admissionDateError.style.display = 'block';
+            admissionDateError.textContent = 'Please select an admission date.';
+        } else {
+            const selectedDate = new Date(this.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                admissionDateError.style.display = 'block';
+                admissionDateError.textContent = 'Admission date cannot be in the past.';
+            } else {
+                admissionDateError.style.display = 'none';
+            }
+        }
+    });
+    
+    // Admission reason validation
+    admissionReasonInput.addEventListener('input', function() {
+        admissionReasonError.style.display = this.value.trim() ? 'none' : 'block';
+    });
+    
+    // Form submission handler
+    form.addEventListener('submit', function(event) {
+        let isValid = true;
+        
+        // Validate all fields
+        if (!wardSelect.value) {
+            wardError.style.display = 'block';
+            isValid = false;
+        }
+        
+        if (!bedNumberInput.value.trim()) {
+            bedNumberError.style.display = 'block';
+            bedNumberError.textContent = 'Please enter a bed number.';
+            isValid = false;
+        }
+        
+        if (!nurseSelect.value) {
+            nurseError.style.display = 'block';
+            isValid = false;
+        }
+        
+        if (!admissionDateInput.value) {
+            admissionDateError.style.display = 'block';
+            admissionDateError.textContent = 'Please select an admission date.';
+            isValid = false;
+        }
+        
+        if (!admissionReasonInput.value.trim()) {
+            admissionReasonError.style.display = 'block';
+            isValid = false;
+        }
+        
+        if (!isValid) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    });
+}
+
+function checkBedAvailability() {
+    const wardSelect = document.getElementById('ward');
+    const bedNumberInput = document.getElementById('bed_number');
+    const bedNumberError = document.getElementById('bed-number-error');
+    const wardAssignmentId = document.querySelector('input[name="ward_assignment_id"]').value;
+    
+    if (!wardSelect.value || !bedNumberInput.value.trim()) return;
+    
+    fetch(`/check_bed_number/?ward=${encodeURIComponent(wardSelect.value)}&bed_number=${encodeURIComponent(bedNumberInput.value.trim())}&exclude_id=${wardAssignmentId}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.exists) {
+                bedNumberError.style.display = 'block';
+                bedNumberError.textContent = 'Bed number is already taken.';
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+</script>
+{% endblock %}

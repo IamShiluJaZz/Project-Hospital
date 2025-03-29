@@ -1,0 +1,74 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="ratings-container">
+    <h5>Your Ratings</h5>
+
+    <div class="ratings-list">
+        {% if ratings %}
+            {% for rating in ratings %}
+                <div class="rating-card"><br><br>
+                    <p><strong>⭐ Rating : </strong> {{ rating.rating }} Star</p>
+                    <p><strong>🗓️ Date : </strong> {{ rating.created_at }}</p>
+                    <form method="post" action="{% url 'delete_rating' rating.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="delete-button">Delete</button>
+                    </form>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No ratings yet.</p>
+        {% endif %}
+    </div><br><br>
+
+    <h5>Submit a Rating</h5><br>
+    <form method="post" class="rating-form">
+        {% csrf_token %}
+        <label>Select Rating:</label>
+        <div class="star-rating">
+            {% for i in "12345" %}
+                <input type="radio" id="star{{ i }}" name="rating" value="{{ i }}" required>
+                <label for="star{{ i }}">⭐</label>
+            {% endfor %}
+        </div><br>
+        <button type="submit"  class="btn btn-success mt-3">Submit</button>
+    </form>
+</div>
+
+<style>
+    .ratings-container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    .ratings-list {
+        margin-bottom: 20px;
+    }
+    .rating-card {
+        background-color: #fff;
+        margin-bottom: 10px;
+        padding: 10px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .delete-button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .delete-button:hover {
+        background-color: darkred;
+    }
+</style>
+
+{% endblock %}

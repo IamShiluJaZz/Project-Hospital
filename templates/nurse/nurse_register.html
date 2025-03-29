@@ -1,0 +1,405 @@
+{% extends 'admin/admin_layout.html' %}
+{% load static %}
+
+{% block content %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<div class="col-12 grid-margin">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Nurse Registration</h4>
+            <form class="form-sample" id="doctorForm" method="POST" enctype="multipart/form-data" onsubmit="return validatePassword()">
+                {% csrf_token %}
+                <p class="card-description">Account Details</p>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" name="email" required />
+                                <span id="emailStatus" class="status-container"></span>
+                                <span class="error" id="emailError"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Mobile</label>
+                            <div class="col-sm-9">
+                                <input type="tel" class="form-control" name="phone" id="phone" required pattern="\d*" maxlength="10" />
+                                <span id="phoneStatus" class="status-container"></span>
+                                <span class="error" id="phoneError"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Password</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" name="password" id="password" required />
+                                <small id="passwordError" class="text-danger"></small>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Confirm Password</label>
+                            <div class="col-sm-9">
+                                <input type="password" class="form-control" name="confirm_password" id="confirm_password" required />
+                                <small id="confirmPasswordError" class="text-danger"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Role</label>
+                            <div class="col-sm-9">
+                                <select name="department" id="department" class="form-control">
+                                    <option value="">Select Role</option>
+                                    {% for key, value in role_choices %}
+                                        <option value="{{ key }}">{{ value }}</option>
+                                    {% endfor %}
+                                </select>                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Nurse Name</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="doctor_name" id="doctor_name" required pattern="[A-Za-z\s]+" />
+                                <span class="error" id="doctorNameError"></span>
+                                <span id="doctorStatus" class="status-container"></span>
+                                <span class="error" id="doctorError"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+
+   
+                <p class="card-description">Personal Information</p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Title</label>
+                            <div class="col-sm-9">
+                                {% for value, label in title_choices %}
+                                    <div class="form-check form-check-inline">
+                                        <input type="radio" class="form-check-input" name="title" value="{{ value }}" {% if value == 'Dr' %}checked{% endif %}>
+                                        <label class="form-check-label">{{ label }}</label>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Gender</label>
+                            <div class="col-sm-9">
+                                <select name="gender" class="form-control" required>
+                                    <option value="">Select Gender</option>
+                                    {% for gender_value, gender_label in gender_choices %}
+                                        <option value="{{ gender_value }}">{{ gender_label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <p class="card-description"></p>
+                <div class="row">
+                 
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">ID Proof</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" name="id_proof" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Profile</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" name="profile" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Joining Date</label>
+                            <div class="col-sm-9">
+                                <input type="date" class="form-control" name="joining_date" id="joining_date" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Marital Status</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="marital_status" name="marital_status" required>
+                                    {% for value, label in marital_status_choices %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div> 
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">DOB:</label>
+                            <div class="col-sm-9">
+                                <input type="date" class="form-control" name="date_of_birth" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Qualification</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="qualifications" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>   
+
+                <p class="card-description"></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Experience (Years)</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="experience_years" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Experience Certificate</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" name="experience_certificate" />
+                            </div>
+                        </div>
+                    </div>
+                </div>   
+
+                <p class="card-description"></p>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Medical Registration Number</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="medical_registration_number" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Medical Registration Certificate</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" id="medical_registration_certificate" name="medical_registration_certificate" onchange="validateFileSize(this)" />
+                                <small class="text-danger" id="medical_registration_certificate_error"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Qualification Certificate</label>
+                            <div class="col-sm-9">
+                                <input type="file" class="form-control" 
+                                name="qualification_certificate" id="qualification_certificate" onchange="validateFileSize(this)" />
+                                <small class="text-danger" id="qualification_certificate_error"></small>
+                            </div>
+                        </div>  
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Address</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" name="address" required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Register</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        let today = new Date().toISOString().split('T')[0];
+        document.querySelector("input[name='date_of_birth']").setAttribute("max", today);
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+    const passwordInput = document.getElementById("password");
+    const confirmPasswordInput = document.getElementById("confirm_password");
+    const passwordError = document.getElementById("passwordError");
+    const confirmPasswordError = document.getElementById("confirmPasswordError");
+    
+    passwordInput.addEventListener("input", validatePasswordStrength);
+    confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+
+    function validatePasswordStrength() {
+        let password = passwordInput.value;
+        let messages = [];
+
+        if (password.length < 8) {
+            messages.push("At least 8 characters required.");
+        }
+        if (!/[A-Z]/.test(password)) {
+            messages.push("At least one uppercase letter.");
+        }
+        if (!/[0-9]/.test(password)) {
+            messages.push("At least one number.");
+        }
+        if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+            messages.push("At least one special character.");
+        }
+
+        if (messages.length > 0) {
+            passwordError.innerHTML = messages.join("<br>");
+        } else {
+            passwordError.innerHTML = "";
+        }
+    }
+
+    function checkPasswordMatch() {
+        if (passwordInput.value !== confirmPasswordInput.value) {
+            confirmPasswordError.textContent = "Passwords do not match!";
+        } else {
+            confirmPasswordError.textContent = "";
+        }
+    }
+
+    document.getElementById("doctorForm").addEventListener("submit", function (event) {
+        validatePasswordStrength();
+        checkPasswordMatch();
+        
+        if (passwordError.textContent !== "" || confirmPasswordError.textContent !== "") {
+            event.preventDefault(); // Prevent form submission if errors exist
+        }
+    });
+});
+
+</script>
+
+<script>
+    function validateFileSize(input) {
+        let file = input.files[0];  // Get the selected file
+        let maxSize = 12 * 1024 * 1024; // 12MB in bytes
+        let errorElement = document.getElementById(input.id + "_error"); // Find the correct error element
+
+        if (file && file.size > maxSize) {
+            errorElement.textContent = "File size must be less than 12MB!";
+            input.value = "";  // Clear the file input
+        } else {
+            errorElement.textContent = "";
+        }
+    }
+    
+</script>
+
+
+<script>
+    function checkAvailability(field, value, statusElement, errorElement) {
+        if (value.length > 0) {
+            $.ajax({
+                url: "{% url 'check_availability' %}",
+                data: { field: field, value: value },
+                dataType: "json",
+                success: function(response) {
+                    if (response.exists) {
+                        $(statusElement).text("").removeClass("available").addClass("not-available");
+                        $(errorElement).text(field.charAt(0).toUpperCase() + field.slice(1) + " already exists").css("color", "red");
+                    } else {
+                        $(statusElement).text("").removeClass("not-available").addClass("available");
+                        $(errorElement).text("✔ " + field.charAt(0).toUpperCase() + field.slice(1) + " is available").css("color", "green");
+                    }
+                }
+            });
+        } else {
+            $(statusElement).text("");
+            $(errorElement).text("");
+        }
+    }
+
+    $(document).ready(function() {
+        $("input[name='email']").on("keyup blur", function() {
+            checkAvailability("email", $(this).val(), "#emailStatus", "#emailError");
+        });
+
+        $("input[name='phone']").on("keyup blur", function() {
+            checkAvailability("phone", $(this).val(), "#phoneStatus", "#phoneError");
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const phoneInput = document.getElementById("phone");
+        const phoneError = document.getElementById("phoneError");
+    
+        phoneInput.addEventListener("input", function () {
+            let phone = phoneInput.value;
+            if (!/^\d{10}$/.test(phone)) {
+                phoneError.textContent = "Phone number must be exactly 10 digits.";
+                phoneError.style.color = "red";
+            } else {
+                phoneError.textContent = "";
+            }
+        });
+    
+        document.getElementById("doctorForm").addEventListener("submit", function (event) {
+            let phone = phoneInput.value;
+            if (!/^\d{10}$/.test(phone)) {
+                phoneError.textContent = "Phone number must be exactly 10 digits.";
+                phoneError.style.color = "red";
+                event.preventDefault(); // Prevent form submission if validation fails
+            }
+        });
+    });
+    </script>
+    
+<script>
+    $(document).ready(function() {
+        $("input[name='doctor_name']").on("keyup blur", function() {
+            let doctorName = $(this).val();
+            // Remove numbers and special characters
+            doctorName = doctorName.replace(/[^A-Za-z\s]/g, '');
+            $(this).val(doctorName);
+
+            // Validation message
+            if (!doctorName.match(/^[A-Za-z\s]+$/)) {
+                $("#doctorNameError").text("Only letters and spaces are allowed.");
+            } else {
+                $("#doctorNameError").text("");
+            }
+        });
+    });
+</script>
+{% endblock %}

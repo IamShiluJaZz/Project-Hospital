@@ -1,0 +1,255 @@
+{% extends 'admin/admin_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-12 stretch-card">
+      <div class="card">
+        <div class="card-body">
+          <p class="card-description">
+            <button class="btn btn-sm btn-primary"><a href="{% url 'register_doctor' %}" class="text-white text-decoration-none">Add New</a></button>
+            <form method="GET" action="#" class="d-flex">
+              <input type="text" name="search" class="form-control" placeholder="Search by Name, Email, Phone, Status" value="{{ search_query }}">
+              <button type="submit" class="btn btn-primary ms-2">Search</button>
+          </form><br>
+            <h3>Pharamacist List</h3><br>
+          </p>
+          <div style="overflow-x: auto;">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th> # </th>
+                  <th> Pharamacist Name </th>
+                  <th>Email</th>
+                  <th> Role </th>
+                  <th> Name </th>
+                  <th> Phone </th>
+                  <th> ID Proof </th>
+                  <th> Image </th>
+                  <th> Address </th>
+                  <th> Gender </th>
+                  <th> Marital Status </th>
+                  <th> Joining Date </th>
+                  <th> Resignation Reason </th>
+                  <th> Resignation Date </th>
+                  <th> Relieving Date </th>
+                  <th> Rejoining Date </th>
+                  <th> Date of Birth </th>
+                  <th> Qualifications </th>
+                  <th> Qualification Certificate </th>
+                  <th> Experience (Years) </th>
+                  <th> Experience Certificate </th>
+                  <th> Medical Reg. Number </th>
+                  <th> Medical Reg. Certificate </th>
+                  <th> User Status </th>
+                  <th> Login Status </th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for doctor in nurses %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>
+                  <td>{{ doctor.fk_user.username }}</td>
+                  <td>{{ doctor.fk_user.email }}</td>
+                  <td>{{ doctor.nurse_role }}</td>
+                  <td>{{ doctor.get_title_display }}. {{ doctor.doctor_name }}</td>
+                  <td>{{ doctor.fk_user.phone }}</td>
+                  <td>{% if doctor.id_proof %}<a href="{{ doctor.id_proof.url }}">View</a>{% endif %}</td>
+                  <td>{% if doctor.image %}<img src="{{ doctor.image.url }}" width="50" height="50">{% endif %}</td>
+                  <td>{{ doctor.address }}</td>
+                  <td>{{ doctor.get_gender_display }}</td>
+                  <td>{{ doctor.get_marital_status_display }}</td>
+                  <td>{{ doctor.joining_date }}</td>
+                <td class="text-center" style="border: 1px solid #989899;">
+                  <input type="text" class="form-control resignation_reason" data-id="{{ doctor.id }}"
+                      value="{{ doctor.resignation_reason|default:'' }}">
+              </td>
+                  <td class="text-center" style="border: 1px solid #989899;">
+                    <input type="date" class="form-control resignation_date" data-id="{{ doctor.id }}"
+                        value="{{ doctor.resignation_date|date:'Y-m-d'|default:'' }}">
+                </td>
+                <td class="text-center" style="border: 1px solid #989899;">
+                    <input type="date" class="form-control reliving_date" data-id="{{ doctor.id }}"
+                        value="{{ doctor.reliving_date|date:'Y-m-d'|default:'' }}">
+                </td>
+                <td class="text-center" style="border: 1px solid #989899;">
+                    <input type="date" class="form-control rejoining_date" data-id="{{ doctor.id }}"
+                        value="{{ doctor.rejoining_date|date:'Y-m-d'|default:'' }}">
+                </td>
+                  <td>{{ doctor.date_of_birth }}</td>
+                  <td>{{ doctor.qualifications }}</td>
+                  <td>{% if doctor.qualification_certificate %}<a href="{{ doctor.qualification_certificate.url }}">View</a>{% endif %}</td>
+                  <td>{{ doctor.experience_years }}</td>
+                  <td>{% if doctor.experience_certificate %}<a href="{{ doctor.experience_certificate.url }}">View</a>{% endif %}</td>
+                  <td>{{ doctor.medical_registration_number }}</td>
+                  <td>{% if doctor.medical_registration_certificate %}<a href="{{ doctor.medical_registration_certificate.url }}">View</a>{% endif %}</td>
+                  <form method="POST" action="{% url 'update_ph_status' doctor.id %}">
+                    {% csrf_token %}
+                    <td class="text-center d-flex align-items-center">
+                        <!-- Displaying the selected status (active, resigned, or rejoined) -->
+                        <span class="ms-2" style="margin-top: 20px;">
+                            {% if doctor.user_status == "active" %}
+                                <span class="badge bg-success">Active</span>
+                            {% elif doctor.user_status == "resigned" %}
+                                <span class="badge bg-danger">Resigned</span>
+                            {% elif doctor.user_status == "rejoined" %}
+                                <span class="badge bg-warning">Rejoined</span>
+                            {% endif %}
+                        </span>
+                        <!-- Dropdown -->
+                        <select name="user_status" class="form-select me-2" style="margin-top: 20px;outline: none;margin-left: 5px;">
+                            <option value="active" {% if doctor.user_status == "active" %}selected{% endif %}>Active</option>
+                            <option value="resigned" {% if doctor.user_status == "resigned" %}selected{% endif %}>Resigned</option>
+                            <option value="rejoined" {% if doctor.user_status == "rejoined" %}selected{% endif %}>Rejoined</option>
+                        </select>
+                        <!-- Update Button -->
+                        <button type="submit" class="btn btn-sm btn-primary ms-2" style="margin-top: 15px;">Update</button>
+                    </td>
+                </form>
+                  <td class="text-center">
+                    <button class="toggle-status btn btn-sm btn-primary">
+                        <a href="{% url 'toggle_login_status_ph' doctor.id %}" class="text-white text-decoration-none">
+                            {% if doctor.login_status %}Active{% else %}Inactive{% endif %}
+                        </a>
+                    </button>
+                </td>
+                </tr>
+                {% endfor %}  
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+  <script>
+   $(document).ready(function () {
+    $(".resignation_date, .reliving_date, .rejoining_date").on("change", function () {
+        var field = $(this).attr("class").split(" ")[1]; // Get field name
+        var doctorId = $(this).data("id"); // Get doctor ID
+        var value = $(this).val(); // Get new value
+        var selectedDate = new Date(value); // Convert to Date object
+
+        var row = $(this).closest("tr"); // Get the current row
+
+        // Get Joining Date
+        var joiningDateText = row.find("td:nth-child(12)").text().trim(); 
+        var joiningDate = new Date(joiningDateText);
+
+        // Get Resignation Date
+        var resignationDateText = row.find(".resignation_date").val();
+        var resignationDate = resignationDateText ? new Date(resignationDateText) : null;
+
+        // Get Relieving Date
+        var relivingDateText = row.find(".reliving_date").val();
+        var relivingDate = relivingDateText ? new Date(relivingDateText) : null;
+
+        // Get Rejoining Date
+        var rejoiningDateText = row.find(".rejoining_date").val();
+        var rejoiningDate = rejoiningDateText ? new Date(rejoiningDateText) : null;
+
+        // Validation Rules
+        if (field === "resignation_date") {
+            if (selectedDate < joiningDate) {
+                alert("Resignation date cannot be before joining date.");
+                $(this).val("");
+                return;
+            }
+        }
+
+        if (field === "reliving_date") {
+            if (resignationDate && selectedDate < resignationDate) {
+                alert("Relieving date cannot be before resignation date.");
+                $(this).val("");
+                return;
+            }
+        }
+
+        if (field === "rejoining_date") {
+            if (selectedDate <= joiningDate || (resignationDate && selectedDate <= resignationDate) || (relivingDate && selectedDate <= relivingDate)) {
+                alert("Rejoining date must be greater than Joining, Resignation, and Relieving dates.");
+                $(this).val("");
+                return;
+            }
+        }
+
+        console.log("Updating:", field, "Value:", value);  // Debugging
+
+        $.ajax({
+            url: "{% url 'update_ph_field' %}",  // Use the correct URL name
+            type: "POST",
+            data: {
+                'doctor_id': doctorId,
+                'field': field,
+                'value': value,
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (response) {
+                console.log("Success:", response);  // Debugging
+                alert("Updated Successfully!");
+            },
+            error: function (xhr, status, error) {
+                console.log("Error:", xhr.responseText);  // Debugging
+                alert("Error updating field.");
+            }
+        });
+    });
+});
+
+</script>
+<script>
+    $(document).ready(function () {
+        $(".resignation_reason").on("blur", function () {
+            var doctorId = $(this).data("id");  // Get doctor ID
+            var value = $(this).val();  // Get new resignation reason
+    
+            $.ajax({
+                url: "{% url 'update_ph_field' %}",  // Update to your actual URL
+                type: "POST",
+                data: {
+                    'doctor_id': doctorId,
+                    'field': 'resignation_reason',
+                    'value': value,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    console.log("Success:", response);
+                    alert("Resignation Reason Updated Successfully!");
+                },
+                error: function (xhr, status, error) {
+                    console.log("Error:", xhr.responseText);
+                    alert("Error updating Resignation Reason.");
+                }
+            });
+        });
+    });
+    </script>
+    
+  <script>
+  $(document).ready(function () {
+      $("#searchInput").on("keyup", function () {
+          var value = $(this).val().toLowerCase();
+  
+          $("#doctorsTable tbody tr").each(function () {
+              var row = $(this);
+              var rowText = row.text().toLowerCase(); // Get all text from the row
+              
+              // Get dropdown selected value
+              var dropdownValue = row.find("select[name='user_status']").val().toLowerCase();
+  
+              // Get badge text
+              var badgeText = row.find(".badge").text().toLowerCase();
+  
+              // Show the row if any text, dropdown value, or badge matches the search
+              row.toggle(rowText.includes(value) || dropdownValue.includes(value) || badgeText.includes(value));
+          });
+      });
+  });
+  
+  
+  </script>
+{% endblock %}

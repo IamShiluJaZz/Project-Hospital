@@ -1,0 +1,54 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block content %}
+
+<section class="section">
+    <div class="row" id="table-hover-row">
+        <div class="col-12">
+            
+            <div class="card">
+                
+                <div class="card-header" style="display: flex; align-items: left; justify-content: space-between;">
+                    <button class="badge bg-success" style="border: none; cursor: pointer;">
+                        <a href="{% url 'add_specialization' %}" style="color: white;">Add New</a></button>
+                    <h4 class="card-title" style="margin: 0; flex-grow: 1; text-align: center;">Specializations</h4>
+                    
+                </div>                
+                <div class="card-content">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>SL No</th>
+                                    <th>Specialization</th>
+                                    <th>Edit</th>
+                                    <th>Trash</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for i in specializations %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>{{ i.specialization_name }}</td>
+                                    <td>
+                                        <a href="{% url 'edit_specialization' i.id %}"><i class="badge bg-success" data-feather="edit">Update</i></a>
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'delete_specialization' i.id %}"><i class="badge bg-danger" data-feather="trash">Trash</i></a>
+                                    </td>
+                                </tr>
+                                {% empty %}  
+                                <tr>
+                                    <td colspan="10" class="text-center">No Specialization found.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

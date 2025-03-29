@@ -1,0 +1,140 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Appointment History</h2>
+
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Doctor Name </th>
+                <th>Patient Name</th>
+                <th>Date</th>
+                <th><b>Shift</b></th>
+                <th>Symptoms</th>
+                <th>Known Diseases</th>
+                <th>MR Number</th>
+                <th>Status</th>
+                <th>Reason</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>Dr. {{ appointment.doctor.fk_user.username }}</td>
+                <td>
+                    {% if appointment.patient_name %}
+                        {{ appointment.patient_name }}
+                    {% else %}
+                        <span class="text-muted">No Report</span>
+                    {% endif %}
+                </td>
+                
+                
+
+                <td>{{ appointment.day }}</td>
+                <td>
+                    {% if appointment.shift %}
+                        {% if appointment.shift == 'morning' %}
+                            Morning (9:00 AM - 12:00 PM)
+                        {% elif appointment.shift == 'noon' %}
+                            Noon (1:00 PM - 3:00 PM)
+                        {% elif appointment.shift == 'evening' %}
+                            Evening (4:00 PM - 7:00 PM)
+                        {% elif appointment.shift == 'night' %}
+                            Night (8:00 PM - 11:00 PM)
+                        {% else %}
+                            {{ appointment.shift }}
+                        {% endif %}
+                    {% else %}
+                        <span class="text-muted">No Shift Assigned</span>
+                    {% endif %}
+                </td>
+                
+                <td>{{ appointment.symptoms }}</td>
+                <td>{{ appointment.known_diseases }}</td>
+                <td>{{ appointment.patient_mr }}</td>
+                <td>
+                    {% if appointment.patient_cancellation or appointment.doctor_cancellation %}
+                        <span class="text-danger">Cancelled</span>
+                    {% else %}
+                        <span class="text-success">Active</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if appointment.patient_cancellation %}
+                        <span class="text-danger">{{ appointment.patient_cancellation.reason }}</span>
+                    {% elif appointment.doctor_cancellation %}
+                        <span class="text-danger">{{ appointment.doctor_cancellation.reason }}</span>
+                    {% else %}
+                        <span class="text-muted">-</span>
+                    {% endif %}
+                </td>                
+                <td>
+                    {% if not appointment.patient_cancellation and not appointment.doctor_cancellation %}
+                        <button class="btn btn-danger cancel-patient-btn" data-id="{{ appointment.id }}">Cancel</button>
+                    {% else %}
+                        <span class="text-muted">Cancelled</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7">No appointments found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination Controls -->
+    <nav>
+        <ul class="pagination">
+            {% if appointments.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1">First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ appointments.previous_page_number }}">Previous</a></li>
+            {% endif %}
+            
+            <li class="page-item active"><span class="page-link">{{ appointments.number }}</span></li>
+
+            {% if appointments.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ appointments.next_page_number }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ appointments.paginator.num_pages }}">Last</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".cancel-patient-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            let appointmentId = this.getAttribute("data-id");
+            let reason = prompt("Enter reason for cancellation:");
+
+            if (reason) {
+                fetch(`/cancel-appointment/patient/${appointmentId}/`, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    body: new URLSearchParams({ "reason": reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error);
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,201 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Rivershore Hospital - Doctor Dashboard </title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+      <meta name="description" content="CodedThemes">
+      <meta name="keywords" content=" Admin , Responsive, Landing, Bootstrap, App, Template, Mobile, iOS, Android, apple, creative app">
+      <meta name="author" content="CodedThemes">
+      <!-- Favicon icon -->
+      <link rel="icon" href="{% static 'assets/images/favicon.ico' %}" type="image/x-icon">
+      <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,600" rel="stylesheet">
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/bootstrap/css/bootstrap.min.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/themify-icons/themify-icons.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/icon/icofont/css/icofont.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/style.css' %}">
+      <link rel="stylesheet" type="text/css" href="{% static 'assets/css/jquery.mCustomScrollbar.css' %}">
+  </head>
+
+  <body>
+    <!-- Pre-loader start -->
+    <div class="theme-loader">
+        <div class="ball-scale">
+            <div class='contain'>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+                <div class="ring">
+                    <div class="frame"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Pre-loader end -->
+    <div id="pcoded" class="pcoded">
+        <div class="pcoded-overlay-box"></div>
+        <div class="pcoded-container navbar-wrapper">
+
+            <nav class="navbar header-navbar pcoded-header">
+                <div class="navbar-wrapper">
+
+                    <div class="navbar-logo" style="background-color: rgb(255, 255, 255);">
+                        <a class="mobile-menu" id="mobile-collapse" href="#!" style="color: black;">
+                            <i class="ti-menu"></i>
+                        </a>
+                        <a class="mobile-search morphsearch-search" href="#">
+                            <i class="ti-search"></i>
+                        </a>
+                        <a href="#">
+                            <img class="img-fluid" src="{% static 'admin/images/hospital.png' %}" alt="Theme-Logo" style="max-width: 180px;margin-left: 10px;" />
+                        </a>
+                        <a class="mobile-options">
+                            <i class="ti-more"></i>
+                        </a>
+                    </div>
+
+                    <div class="navbar-container container-fluid">
+                        <ul class="nav-left">
+                            <li>
+                                <div class="sidebar_toggle"><a href="javascript:void(0)"><i class="ti-menu"></i></a></div>
+                            </li>
+
+                            <li>
+                                <a href="#!" onclick="javascript:toggleFullScreen()">
+                                    <i class="ti-fullscreen"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        <ul class="nav-right">
+                            <li class="user-profile header-notification">
+                                <a href="#!">
+                                    {% if user.doctor.image %}
+                                        <img src="{{ user.doctor.image.url }}" style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" alt="User-Profile-Image">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/default-profile.jpg' %}" style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" alt="Default-Profile-Image">
+                                    {% endif %}
+                                    <span>Dr. {{ user.username }}</span>
+                                    <i class="ti-angle-down"></i>
+                                </a>
+                                
+                                <ul class="show-notification profile-notification">
+                                    <li>
+                                        <a href="{% url 'all_logout' %}">
+                                            <i class="ti-layout-sidebar-left"></i> Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+            <div class="pcoded-main-container">
+                <div class="pcoded-wrapper">
+                    <nav class="pcoded-navbar">
+                        <div class="sidebar_toggle"><a href="#"><i class="icon-close icons"></i></a></div>
+                        <div class="pcoded-navigatio-lavel" data-i18n="nav.category.forms"></div>
+                        <div class="pcoded-inner-navbar main-menu">
+                            <ul class="pcoded-item pcoded-left-item">
+                                <li class="active">
+                                    <a href="{% url 'doctor_home' %}">
+                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-mtext" data-i18n="nav.dash.main">Dashboard</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{% url 'add_availability' %}">
+                                        <span class="pcoded-micon"><i class="ti-layout-grid2-alt"></i><b>D</b></span>
+                                        <span class="pcoded-mtext"  data-i18n="nav.basic-components.main"><b>Add Availability</b></span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="{% url 'doctor_appointments' %}">
+                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-mtext" data-i18n="nav.dash.main">Appointments</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                                <li class="active">
+                                    <a href="{% url 'list_prescriptions' %}">
+                                        <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
+                                        <span class="pcoded-mtext" data-i18n="nav.dash.main">Prescriptions</span>
+                                        <span class="pcoded-mcaret"></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+
+
+                    {% block content %}        
+
+                    {% endblock %}
+
+
+
+                    
+                </div>
+            </div>
+        </div>
+
+<script type="text/javascript" src="{% static 'assets/js/jquery/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jquery-ui/jquery-ui.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/popper.js/popper.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/bootstrap/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/jquery-slimscroll/jquery.slimscroll.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/modernizr/modernizr.js' %}"></script>
+<script src="{% static 'assets/pages/widget/amchart/amcharts.min.js' %}"></script>
+<script src="{% static 'assets/pages/widget/amchart/serial.min.js' %}"></script>
+<script type="text/javascript " src="{% static 'assets/pages/todo/todo.js' %} "></script>
+<script type="text/javascript" src="{% static 'assets/pages/dashboard/custom-dashboard.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/js/script.js' %}"></script>
+<script type="text/javascript " src="{% static 'assets/js/SmoothScroll.js' %}"></script>
+<script src="{% static 'assets/js/pcoded.min.js' %}"></script>
+<script src="{% static 'assets/js/demo-12.js' %}"></script>
+<script src="{% static 'assets/js/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+<script>
+var $window = $(window);
+var nav = $('.fixed-button');
+    $window.scroll(function(){
+        if ($window.scrollTop() >= 200) {
+         nav.addClass('active');
+     }
+     else {
+         nav.removeClass('active');
+     }
+ });
+</script>
+</body>
+
+</html>

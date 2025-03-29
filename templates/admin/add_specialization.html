@@ -1,0 +1,71 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% block content %}
+
+<section class="section">
+    <div class="card">
+        <div class="card-header">
+            <h4 class="card-title">Add New Specialization</h4>
+        </div>
+
+        <!-- Display error message or success message -->
+        <div class="card-body">
+            {% if messages %}
+                <div class="alert alert-dismissible">
+                    {% for message in messages %}
+                        <div class="alert alert-{{ message.tags }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <form action="" method="POST">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <!-- Specialization Name Input -->
+                        <div class="form-group">
+                            <label for="specializationName">Specialization Name</label>
+                            <input type="text" class="form-control" id="specializationName" placeholder="Enter specialization name" name="specialization_name">
+                            <small id="name-error" class="form-text text-danger" style="display: none;">Specialization already exists.</small>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Add Specialization</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    $("#specializationName").keyup(function() {
+        // Trim the input value to remove extra spaces
+        let specializationName = $(this).val().trim();
+        if (specializationName.length > 0) {
+            $.ajax({
+                url: "{% url 'check_specialization' %}",
+                type: "GET",
+                data: { specialization_name: specializationName },
+                success: function(response) {
+                    if (response.exists) {
+                        $("#name-error").show().text("Specialization already exists.");
+                    } else {
+                        $("#name-error").hide();
+                    }
+                }
+            });
+        } else {
+            $("#name-error").hide();
+        }
+    });
+});
+</script>
+
+{% endblock %}

@@ -1,0 +1,140 @@
+{% extends 'doctor/doctor_lay.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="container mt-4">
+                <div class="card shadow-lg">
+                    <div class="card-header bg-primary text-white d-flex align-items-center justify-content-center" style="max-height: 60px; padding: 10px;">
+                        <h5 class="mb-0 text-center" style="color: whitesmoke;">My Appointments</h5>
+                    </div>
+                                        
+                    <div class="card-body">
+                        
+
+
+                        <div class="table-responsive">
+                            <div class="d-flex justify-content-end mb-3">&nbsp;&nbsp;
+                                <form method="GET" class="d-flex align-items-center">&nbsp;&nbsp;
+                                    <label for="date" class="form-label mb-0 me-2" style="transform: translateX(-13px); white-space: nowrap;"><strong>Select Date:</strong></label>&nbsp;
+                                    <input type="date" id="date" name="date" class="form-control" value="{{ selected_date }}" style="max-width: 200px;">&nbsp;&nbsp;
+                                    <button type="submit" class="btn btn-primary ms-2">Filter</button>&nbsp;&nbsp;
+                                    <a href="{% url 'doctor_appointments' %}" class="btn btn-secondary ms-2">Reset</a>
+                                </form>
+                            </div>
+                            
+                            {% if messages %}
+                            <div>
+                                {% for message in messages %}
+                                <div class="alert alert-warning">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            <table class="table table-bordered table-striped">
+
+                                
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Patient Name  </th>
+                                        <th>Day</th>
+                                        <th>Symptoms</th>
+                                        <th>Known Diseases</th>
+                                        <th>Patient MR NO</th>
+                                        <th>Status</th>
+                                        <th>Reason</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% if appointments %}
+                                        {% for appointment in appointments %}
+                                            <tr>
+                                                 <!-- Display the MedicalReport.name corresponding to the MR number -->
+                                                 <td>
+                                                    {% if appointment.report_name %}
+                                                        {{ appointment.report_name }}
+                                                    {% else %}
+                                                        <span class="text-muted">No Patient Name Found</span>
+                                                    {% endif %}
+                                                </td>
+
+                                                
+                                                <td>{{ appointment.day }}</td>
+                                                <td>{{ appointment.symptoms }}</td>
+                                                <td>{{ appointment.known_diseases }}</td>
+                                                <td>
+                                                    <a href="{% url 'medical_report_detail' appointment.patient_mr %}" class="btn btn-link">
+                                                        {{ appointment.patient_mr }}
+                                                    </a>
+                                                </td>
+                                                <td>
+                                                    {% if appointment.patient_cancellation or appointment.doctor_cancellation %}
+                                                        <span class="text-danger">Cancelled</span>
+                                                    {% else %}
+                                                        <span class="text-success">Active</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if appointment.patient_cancellation %}
+                                                        <span class="text-danger">{{ appointment.patient_cancellation.reason }}</span>
+                                                    {% elif appointment.doctor_cancellation %}
+                                                        <span class="text-danger">{{ appointment.doctor_cancellation.reason }}</span>
+                                                    {% else %}
+                                                        <span class="text-muted">-</span>
+                                                    {% endif %}
+                                                </td>                                                
+                                                <td>
+                                                    {% if not appointment.patient_cancellation and not appointment.doctor_cancellation %}
+                                                        <button class="btn btn-warning cancel-doctor-btn" data-id="{{ appointment.id }}">Cancel</button>
+                                                    {% else %}
+                                                        <span class="text-muted">Cancelled</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    {% else %}
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">No Appointments Found</td>
+                                        </tr>
+                                    {% endif %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll(".cancel-doctor-btn").forEach(button => {
+        button.addEventListener("click", function() {
+            let appointmentId = this.getAttribute("data-id");
+            let reason = prompt("Enter reason for cancellation:");
+
+            if (reason) {
+                fetch(`/cancel-appointment/doctor/${appointmentId}/`, {
+                    method: "POST",
+                    headers: { "X-CSRFToken": "{{ csrf_token }}" },
+                    body: new URLSearchParams({ "reason": reason })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message) {
+                        alert(data.message);
+                        location.reload();
+                    } else {
+                        alert(data.error);
+                    }
+                });
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

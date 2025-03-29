@@ -1,0 +1,85 @@
+{% extends 'lab/lab_lay.html' %}
+{% load static %}
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h3>Lab Tests</h3>
+                        <a href="{% url 'create_lab_test' %}" class="btn btn-primary">Add New Test</a>
+                    </div>
+
+                    <!-- Search Input -->
+                    <div class="mb-3">
+                        <input type="text" id="searchInput" class="form-control" placeholder="Search for lab tests...">
+                    </div>
+
+                    <div class="card shadow-lg p-3">
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Test Name</th>
+                                        <th>Test Type</th>
+                                        <th>Price</th>
+                                        <th>Description</th>
+                                        <th>Image</th>
+                                        <th>Created At</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="labTestTable">
+                                    {% for test in lab_tests %}
+                                        <tr>
+                                            <td>{{ forloop.counter }}</td>
+                                            <td>{{ test.get_test_name_display }}</td>
+                                            <td>{{ test.get_test_type_display }}</td>
+                                            <td style="text-align: right; width: 100px;">₹ {{ test.price }}</td>
+                                            <td>{{ test.description|truncatewords:10 }}</td>
+                                            <td>
+                                                {% if test.image %}
+                                                    <img src="{{ test.image.url }}" alt="Test Image" class="img-thumbnail" style="width: 50px; height: 50px;">
+                                                {% else %}
+                                                    No Image
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ test.created_at }}</td>
+                                            <td>
+                                                <a href="{% url 'update_lab_test' test.id %}" class="btn btn-sm btn-warning">Edit</a>
+                                                <a href="{% url 'delete_lab_test' test.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                                            </td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="8" class="text-center">No Lab Tests Found</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Real-Time Search -->
+<script>
+document.getElementById("searchInput").addEventListener("keyup", function() {
+    let searchValue = this.value.toLowerCase();
+    let rows = document.querySelectorAll("#labTestTable tr");
+
+    rows.forEach(row => {
+        let text = row.innerText.toLowerCase();
+        row.style.display = text.includes(searchValue) ? "" : "none";
+    });
+});
+</script>
+
+{% endblock %}

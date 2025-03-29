@@ -1,0 +1,97 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Edit Patient Details</h2>
+        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <input type="hidden" name="report_id" value="{{ report.id }}">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="marital_status" class="form-label">Marital Status</label>
+                    <select class="form-select" name="marital_status" id="marital_status" required>
+                        {% for value, label in marital_status_choices %}
+                            <option value="{{ value }}" {% if report.marital_status == value %}selected{% endif %}>{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="allergies" class="form-label">Allergy</label>
+                    <input type="text" class="form-control" name="allergies" id="allergies" value="{{ report.allergies }}">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="ongoing_medications" class="form-label">Ongoing Medicines</label>
+                    <input type="text" class="form-control" name="ongoing_medications" id="ongoing_medications" value="{{ report.ongoing_medications }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="previous_surgeries" class="form-label">Previous Surgery</label>
+                    <input type="text" class="form-control" name="previous_surgeries" id="previous_surgeries" value="{{ report.previous_surgeries }}">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <label for="existing_conditions" class="form-label">Existing Conditions</label>
+                    <input type="text" class="form-control" name="existing_conditions" id="existing_conditions" value="{{ report.existing_conditions }}">
+                </div>
+
+                <div class="col-md-6">
+                    <label for="medical_report_file" class="form-label">Update Medical Report (PDF only)</label>
+                    <input type="file" class="form-control" name="medical_report_file" id="medical_report_file"><br>
+                    {% if report.medical_report_file %}
+                        <p>Current file: <a href="{{ report.medical_report_file.url }}" target="_blank">View Report</a></p>
+                    {% endif %}
+                    <p id="file-error" class="text-danger mt-2"></p>  <!-- Dynamic error message -->
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <button type="submit" class="btn btn-primary btn" id="submitBtn" >Update Report</button>
+                <a href="{% url 'report_list' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<!-- ✅ JavaScript for Dynamic File Validation -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fileInput = document.getElementById("medical_report_file");
+        const errorMsg = document.getElementById("file-error");
+        const submitBtn = document.getElementById("submitBtn");
+
+        function validateFile() {
+            errorMsg.innerHTML = "";  // Clear previous errors
+            submitBtn.disabled = true; // Disable submit button initially
+
+            if (fileInput.files.length > 0) {
+                const file = fileInput.files[0];
+                const maxSize = 25 * 1024 * 1024; // 25MB
+
+                if (!file.name.endsWith(".pdf")) {
+                    errorMsg.innerHTML = "❌ Only PDF files are allowed.";
+                } else if (file.size > maxSize) {
+                    errorMsg.innerHTML = "❌ File size must be less than 25MB.";
+                } else {
+                    submitBtn.disabled = false; // Enable submit if valid
+                }
+            } else {
+                submitBtn.disabled = false; // Allow submission if no file is uploaded
+            }
+        }
+
+        fileInput.addEventListener("change", validateFile);
+    });
+</script>
+
+{% endblock %}

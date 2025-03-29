@@ -1,0 +1,98 @@
+{% extends 'admin/admin_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="ratings-container">
+    <h4>All User Ratings</h4><br>
+
+    {% if ratings %}
+        <ul class="ratings-list">
+            {% for rating in ratings %}
+                <li class="rating-card">
+                    <div class="rating-info">
+                        <span class="rating-user">👤 User: {{ rating.user.username }}</span>
+                        <p class="rating-value">⭐ Rating: {{ rating.rating }} Star</p>
+                        <p class="rating-date">🗓️ Date: {{ rating.created_at }}</p>
+                    </div>
+
+                    <!-- Delete Rating Form -->
+                    <form method="post" class="delete-form">
+                        {% csrf_token %}
+                        <input type="hidden" name="rating_id" value="{{ rating.id }}">
+                        <button type="submit" >Delete</button>
+                    </form>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No ratings available.</p>
+    {% endif %}
+</div>
+
+<style>
+    .ratings-container {
+        max-width: 800px;
+        margin: 20px auto;
+        padding: 20px;
+        background-color: #f4f4f9;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        font-family: Arial, sans-serif;
+    }
+
+    .ratings-list {
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .rating-card {
+        background-color: #ffffff;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .rating-info {
+        max-width: 70%;
+    }
+
+    .rating-user {
+        font-weight: bold;
+        color: #0066cc;
+    }
+
+    .rating-value,
+    .rating-date {
+        margin: 8px 0;
+        color: #333;
+    }
+
+    .delete-form {
+        max-width: 25%;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    .delete-form button {
+        background-color: red;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        
+    }
+
+    .delete-form button:hover {
+        background-color: darkred;
+
+    }
+</style>
+{% endblock %}

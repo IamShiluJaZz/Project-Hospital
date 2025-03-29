@@ -1,0 +1,37 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <h2 class="text-primary text-center"> Payment Page</h2><br>
+                    <div class="alert alert-info text-center">
+                        <p>Processing payment for Patient ID: <strong>{{ patient_id }}</strong></p>
+                        <p>Amount to be paid: <strong>₹{{ grand_total }}</strong></p>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button class="btn btn-success" onclick="completePayment()">Complete Payment</button>
+                    </div>
+                    
+                    <div id="payment_success" class="alert alert-success mt-3 text-center" style="display: none;">
+                        Payment successful! Redirecting...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function completePayment() {
+    document.getElementById('payment_success').style.display = 'block';
+    setTimeout(function() {
+        window.location.href = "{% url 'report_list' %}";
+    }, 2000);
+}
+</script>
+{% endblock %}

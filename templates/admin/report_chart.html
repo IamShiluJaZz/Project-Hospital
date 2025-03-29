@@ -1,0 +1,147 @@
+{% extends 'admin/admin_layout.html' %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Report Counts for {{ month_name }} {{ selected_year }}</h2>
+    
+    <!-- Month/Year Filter Form -->
+    <div class="card mb-4 shadow">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-5">
+                    <label for="month" class="form-label">Month</label>
+                    <select name="month" id="month" class="form-select">
+                        {% for num, name in months %}
+                            <option value="{{ num }}" {% if num == selected_month %}selected{% endif %}>{{ name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-5">
+                    <label for="year" class="form-label">Year</label>
+                    <select name="year" id="year" class="form-select">
+                        {% for y in years %}
+                            <option value="{{ y }}" {% if y == selected_year %}selected{% endif %}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Filter</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Left Column - Table -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Report Statistics</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>Report Type</th>
+                                <th class="text-end">Total Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Medicine Process</td>
+                                <td class="text-end">{{ total_med_process|default:"0" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Lab Reports</td>
+                                <td class="text-end">{{ total_lab|default:"0" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Radio Reports</td>
+                                <td class="text-end">{{ total_radio|default:"0" }}</td>
+                            </tr>
+                            <tr>
+                                <td>Appointments</td>
+                                <td class="text-end">{{ total_appointment|default:"0" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column - Chart -->
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h5 class="mb-0">Visual Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="reportChart" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chart.js Library -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Parse the values as integers in JavaScript
+    var totalMedProcess = parseInt("{{ total_med_process|default:'0' }}", 10);
+    var totalLab = parseInt("{{ total_lab|default:'0' }}", 10);
+    var totalRadio = parseInt("{{ total_radio|default:'0' }}", 10);
+    var totalAppointment = parseInt("{{ total_appointment|default:'0' }}", 10);
+
+    var ctx = document.getElementById('reportChart').getContext('2d');
+    var reportChart = new Chart(ctx, {
+        type: 'pie',
+        data: {
+            labels: ['Medicine Process', 'Lab Reports', 'Radio Reports', 'Appointments'],
+            datasets: [{
+                data: [
+                    totalMedProcess,
+                    totalLab,
+                    totalRadio,
+                    totalAppointment
+                ],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',   // red
+                    'rgba(54, 162, 235, 0.7)',   // blue
+                    'rgba(255, 206, 86, 0.7)',   // yellow
+                    'rgba(75, 192, 192, 0.7)'    // green
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)'
+                ],
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                title: {
+                    display: true,
+                    text: 'Monthly Report Distribution - {{ month_name }} {{ selected_year }}',
+                    font: {
+                        size: 16
+                    }
+                },
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 20
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    position: 'nearest'
+                }
+            }
+        }
+    });
+</script>
+{% endblock %}

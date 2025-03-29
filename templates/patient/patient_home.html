@@ -1,0 +1,68 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+
+<section id="hero" class="hero section light-background">
+
+  <img src="{% static 'patient/assets/img/hero-bg.jpg'%}" alt="" data-aos="fade-in"> 
+
+  <div class="container position-relative">
+
+    <div class="welcome position-relative" data-aos="fade-down" data-aos-delay="100">
+      <h2>WELCOME TO <span style="color:#46ff47;">RIVER</span><span style="color: #063dfc;">SHORE</span></h2>
+      <p>Optimizing healthcare with smart hospital management.</p>
+    </div><!-- End Welcome -->
+
+    <div class="content row gy-4">
+      <div class="col-lg-4 d-flex align-items-stretch">
+        <div class="why-box" data-aos="zoom-out" data-aos-delay="200">
+          <h3>Why Choose Rivershore?</h3>
+          <p>
+            Expert care, advanced technology, 24/7 emergency support, and seamless patient services—Rivershore Hospital puts your health first.   <div class="text-center">
+            <a href="{% url 'about' %}" class="more-btn"><span>Learn More</span> <i class="bi bi-chevron-right"></i></a>
+          </div>
+        </div>
+      </div><!-- End Why Box -->
+
+      <div class="col-lg-8 d-flex align-items-stretch">
+        <div class="d-flex flex-column justify-content-center">
+          <div class="row gy-4">
+
+            <div class="col-xl-4 d-flex align-items-stretch">
+              <div class="icon-box" data-aos="zoom-out" data-aos-delay="300">
+                <i class="bi bi-clipboard-data"></i>
+                <h4>Seamless Patient Management</h4>
+                <p>Effortlessly manage appointments, medical records, and reports with our smart healthcare system."</p>
+              </div>
+            </div><!-- End Icon Box -->
+
+            <div class="col-xl-4 d-flex align-items-stretch">
+              <div class="icon-box" data-aos="zoom-out" data-aos-delay="400">
+                <i class="bi bi-hospital"></i>
+                <h4>Advanced Medical Excellence</h4>
+                <p>Experience world-class treatment with cutting-edge technology and expert healthcare professionals.</p>
+              </div>
+            </div><!-- End Icon Box -->
+
+            <div class="col-xl-4 d-flex align-items-stretch">
+              <div class="icon-box" data-aos="zoom-out" data-aos-delay="500">
+                <i class="bi bi-heart-pulse"></i>
+                <h4>24/7 Emergency & Critical Care</h4>
+                <p>Immediate medical attention when it matters the most, ensuring patient safety and well-being.</p>
+              </div>
+            </div><!-- End Icon Box -->
+
+          </div>
+        </div>
+      </div>
+    </div><!-- End  Content-->
+
+  </div>
+
+</section><!-- /Hero Section -->
+
+
+
+
+{% endblock %}

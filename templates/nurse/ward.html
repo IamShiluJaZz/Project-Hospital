@@ -1,0 +1,290 @@
+{% extends 'nurse/nurse_lay.html' %}
+
+{% block content %}
+<div class="container my-5" style="max-width: 1000px;"><br>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="card shadow-lg border-0">
+        <div class="card-header bg-primary text-white text-center">
+          <h2 class="mb-0">Add Ward Assignment</h2>
+        </div>
+        <div class="card-body">
+          <form method="POST" class="needs-validation" novalidate id="wardForm">
+            {% csrf_token %}
+            <!-- Row 1: Patient and Ward -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="prescription" class="form-label">Select Patient (MR No):</label>
+                <select name="prescription" id="prescription" class="form-select" required>
+                  <option value="" selected disabled>Select Patient</option>
+                  {% for prescription in prescriptions %}
+                  <option value="{{ prescription.id }}">{{ prescription.patient_id }}</option>
+                  {% endfor %}
+                </select>
+                <div class="invalid-feedback" id="patient-id-error">
+                  Please select a patient.
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label for="ward" class="form-label">Select Ward:</label>
+                <select name="ward" id="ward" class="form-select" required>
+                  <option value="" selected disabled>Select Ward</option>
+                  {% for ward_code, ward_label in wards %}
+                  <option value="{{ ward_code }}">{{ ward_label }}</option>
+                  {% endfor %}
+                </select>
+                <div class="invalid-feedback" id="ward-error">
+                  Please select a ward.
+                </div>
+              </div>
+            </div>
+            
+            <!-- Row 1b: Display Patient and Doctor Details -->
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label class="form-label">Patient Name:</label>
+                <input type="text" id="patient_name" class="form-control" readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Doctor Name:</label>
+                <input type="text" id="doctor_name" class="form-control" readonly>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Department:</label>
+                <input type="text" id="department" class="form-control" readonly>
+              </div>
+            </div>
+
+            <!-- Row 2: Bed Number and Assigned Nurse -->
+            <div class="row mb-2">
+              <div class="col-md-6">
+                <label for="bed_number" class="form-label">Bed Number:</label>
+                <input type="text" name="bed_number" id="bed_number" class="form-control" required>
+                <div class="invalid-feedback" id="bed-number-error">
+                  Please enter a bed number.
+                </div>
+              </div>
+              <div class="col-md-5">
+                <label for="assigned_nurse" class="form-label">Assigned Nurse:</label>
+                <select name="assigned_nurse" id="assigned_nurse" class="form-select" required>
+                  <option value="" selected disabled>Select Nurse</option>
+                  {% for nurse in nurses %}
+                  <option value="{{ nurse.id }}">{{ nurse }}</option>
+                  {% endfor %}
+                </select>
+                <div class="invalid-feedback" id="nurse-error">
+                  Please select a nurse.
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 3: Admission Date and Admission Reason -->
+            <div class="row mb-3">
+              <div class="col-md-6">
+                <label for="admission_date" class="form-label">Admission Date:</label>
+                <input type="date" name="admission_date" id="admission_date" class="form-control" required>
+                <div class="invalid-feedback" id="admission-date-error">
+                  Please select a valid admission date.
+                </div>
+              </div>
+              <div class="col-md-5">
+                <label for="admission_reason" class="form-label">Admission Reason:</label>
+                <textarea name="admission_reason" id="admission_reason" class="form-control" rows="1" required></textarea>
+                <div class="invalid-feedback">
+                  Please provide a reason for admission.
+                </div>
+              </div>
+            </div>
+
+            <!-- Row 4: Additional Notes (full width) -->
+            <div class="mb-3">
+              <label for="additional_notes" class="form-label">Additional Notes:</label>
+              <textarea name="additional_notes" id="additional_notes" class="form-control" rows="3"></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="text-center">
+              <button type="submit" class="btn btn-success px-4">Submit</button>
+              <a href="{% url 'ward_assignment_list' %}" class="btn btn-secondary px-4 ms-2">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Bootstrap custom validation script and additional JS -->
+<script>
+  // Bootstrap custom validation (only shows errors if field is invalid)
+  (function () {
+    'use strict';
+    var forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        form.classList.add('was-validated');
+      }, false);
+    });
+  })();
+
+  // Fetch and display patient and doctor details when a patient (MR no.) is selected
+  document.getElementById("prescription").addEventListener("change", function () {
+    let prescriptionId = this.value;
+    if (!prescriptionId) return;
+    fetch(`/get_prescription_details/?prescription_id=${prescriptionId}`)
+      .then(response => response.json())
+      .then(data => {
+        document.getElementById("patient_name").value = data.patient_name || "";
+        document.getElementById("doctor_name").value = data.doctor_name || "";
+        document.getElementById("department").value = data.department || "";
+      })
+      .catch(error => console.error("Error fetching details:", error));
+  });
+
+  // Admission Date Validation: disallow past dates
+  const admissionDateInput = document.getElementById("admission_date");
+  admissionDateInput.addEventListener("change", function () {
+    let inputDate = new Date(this.value);
+    let today = new Date();
+    today.setHours(0,0,0,0);
+    if (inputDate < today) {
+      this.setCustomValidity("Past dates are not allowed.");
+      document.getElementById("admission-date-error").innerText = "Admission date cannot be in the past.";
+    } else {
+      this.setCustomValidity("");
+      document.getElementById("admission-date-error").innerText = "";
+    }
+  });
+  document.addEventListener("DOMContentLoaded", function () {
+    let todayStr = new Date().toISOString().split("T")[0];
+    admissionDateInput.setAttribute("min", todayStr);
+  });
+
+  // Bed Number Uniqueness Check: when ward or bed number changes, check if combination is taken
+  const bedNumberInput = document.getElementById("bed_number");
+  const wardSelect = document.getElementById("ward");
+  const bedNumberErrorDiv = document.getElementById("bed-number-error");
+
+  function checkBedNumber() {
+    let ward = wardSelect.value;
+    let bedNumber = bedNumberInput.value.trim();
+    // Clear any previous custom validity if field is not empty
+    if (!bedNumber) {
+      bedNumberInput.setCustomValidity("Please enter a bed number.");
+      bedNumberErrorDiv.innerText = "Please enter a bed number.";
+      return;
+    }
+    if (ward) {
+      fetch(`/check_bed_number/?ward=${encodeURIComponent(ward)}&bed_number=${encodeURIComponent(bedNumber)}`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.exists) {
+            bedNumberInput.setCustomValidity("Bed number is already taken.");
+            bedNumberErrorDiv.innerText = "Bed number is already taken.";
+          } else {
+            bedNumberInput.setCustomValidity("");
+            bedNumberErrorDiv.innerText = "";
+          }
+        })
+        .catch(error => console.error("Error checking bed number:", error));
+    }
+  }
+  bedNumberInput.addEventListener("input", checkBedNumber);
+  wardSelect.addEventListener("change", checkBedNumber);
+
+  // Optional: Clear error when bed number is not empty
+  bedNumberInput.addEventListener("input", function () {
+    if (this.value.trim() !== "") {
+      this.setCustomValidity("");
+      bedNumberErrorDiv.innerText = "";
+    }
+  });
+  
+  // Optionally, revalidate admission reason and bed number on input so that errors clear when valid data is entered
+  document.getElementById("admission_reason").addEventListener("input", function () {
+    if (this.value.trim() !== "") {
+      this.setCustomValidity("");
+    }
+  });
+
+  // Dynamic validation for admission_reason textarea
+const admissionReasonInput = document.getElementById("admission_reason");
+const admissionReasonError = document.getElementById("admission_reason").nextElementSibling;
+
+admissionReasonInput.addEventListener("input", function() {
+    if (this.value.trim() === "") {
+        this.setCustomValidity("Please provide a reason for admission.");
+        admissionReasonError.style.display = "block";
+    } else {
+        this.setCustomValidity("");
+        admissionReasonError.style.display = "none";
+    }
+});
+
+// Dynamic validation for dropdowns
+function setupDropdownValidation(dropdownId, errorId) {
+    const dropdown = document.getElementById(dropdownId);
+    const errorElement = document.getElementById(errorId);
+
+    dropdown.addEventListener("change", function() {
+        if (this.value === "") {
+            errorElement.style.display = "block";
+        } else {
+            errorElement.style.display = "none";
+        }
+    });
+
+    // Initial check
+    if (dropdown.value === "") {
+        errorElement.style.display = "block";
+    } else {
+        errorElement.style.display = "none";
+    }
+}
+
+// Apply validation to all required dropdowns
+setupDropdownValidation("prescription", "patient-id-error");
+setupDropdownValidation("ward", "ward-error");
+setupDropdownValidation("assigned_nurse", "nurse-error");
+
+// Update the form submission validation to include these checks
+(function () {
+    'use strict';
+    var forms = document.querySelectorAll('.needs-validation');
+    Array.prototype.slice.call(forms).forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+            // Manually check all required fields
+            let isValid = true;
+            
+            // Check dropdowns
+            const requiredDropdowns = ["prescription", "ward", "assigned_nurse"];
+            requiredDropdowns.forEach(id => {
+                const dropdown = document.getElementById(id);
+                const errorElement = document.getElementById(`${id}-error`);
+                if (dropdown.value === "") {
+                    errorElement.style.display = "block";
+                    isValid = false;
+                }
+            });
+            
+            // Check admission reason
+            if (admissionReasonInput.value.trim() === "") {
+                admissionReasonError.style.display = "block";
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+        }, false);
+    });
+})();
+</script>
+{% endblock %}

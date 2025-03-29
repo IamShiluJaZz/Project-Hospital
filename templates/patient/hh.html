@@ -1,0 +1,151 @@
+<style>
+    /* Chat Icon */
+    .chat-icon {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background-color: #2c4964;
+      color: #fff;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+  
+    .chat-icon i {
+      font-size: 24px;
+    }
+  
+    /* Chat Box */
+    .chat-box {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      width: 300px;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: none;
+      flex-direction: column;
+      z-index: 1000;
+    }
+  
+    .chat-box-header {
+      background-color: #2c4964;
+      color: #fff;
+      padding: 10px;
+      border-top-left-radius: 10px;
+      border-top-right-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  
+    .chat-box-header span {
+      font-weight: bold;
+    }
+  
+    .close-chat {
+      background: none;
+      border: none;
+      color: #fff;
+      cursor: pointer;
+    }
+  
+    .chat-box-body {
+      padding: 10px;
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 200px;
+    }
+  
+    .chat-box-footer {
+      display: flex;
+      padding: 10px;
+      border-top: 1px solid #ddd;
+    }
+  
+    .chat-box-footer input {
+      flex-grow: 1;
+      padding: 5px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-right: 10px;
+    }
+  
+    .chat-box-footer button {
+      background-color: #2c4964;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+  </style>
+  
+
+  <!-- Chat Icon -->
+<div id="chat-icon" class="chat-icon">
+    <i class="bi bi-chat-dots"></i>
+</div>
+
+<!-- Chat Box -->
+<div id="chat-box" class="chat-box">
+    <div class="chat-box-header">
+        <span>Chat with Us</span>
+        <button id="close-chat" class="close-chat"><i class="bi bi-x"></i></button>
+    </div>
+    <div id="chat-body" class="chat-box-body">
+        <p><b>Welcome to Rivershore!</b></p>
+    </div>
+    <div class="chat-box-footer">
+        <input type="text" id="user-input" placeholder="Type a message..." />
+        <button onclick="sendMessage()"><i class="bi bi-send"></i></button>
+    </div>
+</div>
+
+<script>
+const chatBox = document.getElementById("chat-box");
+const chatIcon = document.getElementById("chat-icon");
+const closeChat = document.getElementById("close-chat");
+const chatBody = document.getElementById("chat-body");
+const userInput = document.getElementById("user-input");
+
+chatIcon.onclick = () => {
+    chatBox.style.display = "flex";
+};
+
+closeChat.onclick = () => {
+    chatBox.style.display = "none";
+};
+
+function sendMessage() {
+    const userText = userInput.value.trim();
+    if (userText === "") return;
+
+    appendMessage("You", userText);
+
+    fetch("/api/chatbot/", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: userText }),
+    })
+    .then(response => response.json())
+    .then(data => appendMessage("Bot", data.response))
+    .catch(() => appendMessage("Bot", "Error connecting to server."));
+
+    userInput.value = "";
+}
+
+function appendMessage(sender, text) {
+    const msg = document.createElement("p");
+    msg.innerHTML = `<b>${sender}:</b> ${text}`;
+    chatBody.appendChild(msg);
+    chatBody.scrollTop = chatBody.scrollHeight;
+}
+</script>

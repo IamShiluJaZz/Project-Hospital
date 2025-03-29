@@ -1,0 +1,118 @@
+{% extends 'doctor/doctor_lay.html' %}
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="container mt-4">
+                <div class="ag-format-container" >
+                    <div class="ag-courses_box" style="margin-right: 150px;">
+                        <div class="ag-courses_item">
+                            <div class="ag-courses-item_link">
+                                <div class="ag-courses-item_bg"></div>
+
+                                <!-- Card Header Inside -->
+                                <div class="card-header bg-primary text-white d-flex align-items-center"style="background-color: #3ecd5e;">
+                                    <a href="{% url 'doctor_appointments' %}" class="btn btn-light btn-sm">
+                                        ← Back to List
+                                    </a>
+                                    <h5 class="mb-0 text-center flex-grow-1" style="margin-left: 20px;">Medical Report Details</h5>
+                                </div>
+
+                                <div class="ag-courses-item_title">
+                                    {% if reports %}
+                                        <div class="row">
+                                            {% for report in reports %}
+                                            <div class="col-md-12 mb-4" > <!-- Single card per row -->
+                                                <div class="card shadow-sm">
+                                                    <div class="card-body" style="background-color: #030303; ">
+                                                        <h5 class="card-title text-primary">{{ report.name }}</h5>
+                                                        <p><strong>Gender:</strong> {{ report.gender }}</p>
+                                                        <p><strong>Blood Group:</strong> {{ report.blood_group }}</p>
+                                                        <p><strong>Marital Status:</strong> {{ report.marital_status }}</p>
+                                                        <p><strong>Allergies:</strong> {{ report.allergies }}</p>
+                                                        <p><strong>Existing Conditions:</strong> {{ report.existing_conditions }}</p>
+                                                        <p><strong>Ongoing Medications:</strong> {{ report.ongoing_medications }}</p>
+                                                        <p><strong>Previous Surgeries:</strong> {{ report.previous_surgeries }}</p>
+
+                                                        {% if report.medical_report_file %}
+                                                            <a href="{{ report.medical_report_file.url }}" class="btn btn-sm btn-success" target="_blank">View File</a>
+                                                        {% else %}
+                                                            <span class="text-muted">No File</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        <p class="text-center text-muted">No medical report found for this patient.</p>
+                                    {% endif %}
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .ag-format-container {
+        width: 1142px;
+        margin: 0 auto;
+    }
+
+    .ag-courses_box {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 50px 0;
+        justify-content: center; /* Center content */
+    }
+
+    .ag-courses_item {
+        flex-basis: calc(50% - 30px);
+        margin: 0 15px 30px;
+        border-radius: 28px;
+        overflow: hidden;
+    }
+
+ 
+    .ag-courses-item_title {
+        font-size: 24px;
+        color: #FFF;
+        text-align: center;
+    }
+
+    .card-header {
+        border-top-left-radius: 28px;
+        border-top-right-radius: 28px;
+        padding: 15px;
+    }
+
+    .card-body {
+        color: #FFF;
+        background-color: #222;
+        padding: 20px;
+        border-bottom-left-radius: 28px;
+        border-bottom-right-radius: 28px;
+    }
+
+
+
+    .ag-courses_item:nth-child(2n) .ag-courses-item_bg {
+        background-color: #3ecd5e;
+    }
+
+    @media only screen and (max-width: 979px) {
+        .ag-courses_item {
+            flex-basis: calc(100% - 30px);
+        }
+
+        .ag-courses-item_title {
+            font-size: 20px;
+        }
+    }
+
+</style>
+{% endblock %}

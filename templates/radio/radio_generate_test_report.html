@@ -1,0 +1,65 @@
+{% extends 'radio/radio_lay.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <h3>Create Report for {{ test.get_test_name_display }}</h3><br>
+                    <p><strong>Patient ID:</strong> {{ patient_id }}</p><br>
+
+                    <form method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
+                        {% csrf_token %}  
+                        <!-- <div class="mb-3">
+                            <label class="form-label">Patient ID:</label>
+                            <input type="text" class="form-control" name="patient_id" value="{{ patient_id }}" readonly>
+                        </div> -->
+                        <div class="mb-3">
+                            <label class="form-label">Test Result Analysis:</label>
+                            <textarea class="form-control" name="test_result_analysis" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Test Report (PDF Only, Max 250MB):</label>
+                            <input type="file" class="form-control" name="test_upload" id="test_upload" required>
+                            <small id="fileError" class="text-danger"></small>
+                        </div>
+                        <button type="submit" class="btn btn-success">Submit Report</button>
+                        <a href="{% url 'list_radio_prescriptions' %}" class="btn btn-secondary">Cancel</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function validateForm() {
+    const fileInput = document.getElementById('test_upload');
+    const errorElement = document.getElementById('fileError');
+    const file = fileInput.files[0];
+    const allowedExtension = "pdf";
+    const maxSize = 250 * 1024 * 1024; // 250MB
+
+    if (!file) {
+        errorElement.textContent = "Please upload a file.";
+        return false;
+    }
+
+    const fileExtension = file.name.split('.').pop().toLowerCase();
+    if (fileExtension !== allowedExtension) {
+        errorElement.textContent = "Only PDF files are allowed.";
+        return false;
+    }
+
+    if (file.size > maxSize) {
+        errorElement.textContent = "File size must be within 250 MB.";
+        return false;
+    }
+
+    errorElement.textContent = ""; // Clear any previous errors
+    return true;
+}
+</script>
+{% endblock %}

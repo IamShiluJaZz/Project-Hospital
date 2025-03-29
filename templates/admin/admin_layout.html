@@ -1,0 +1,268 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Rivershore - Admin</title>
+    <!-- plugins:css -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css'%}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/ti-icons/css/themify-icons.css'%}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css'%}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/font-awesome/css/font-awesome.min.css'%}">
+    <!-- endinject -->
+    <!-- Plugin css for this page -->
+    <link rel="stylesheet" href="{% static 'admin/vendors/font-awesome/css/font-awesome.min.css'%}" />
+    <link rel="stylesheet" href="{% static 'admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.css'%}">
+    <!-- End plugin css for this page -->
+    <!-- inject:css -->
+    <!-- endinject -->
+    <!-- Layout styles -->
+    <link rel="stylesheet" href="{% static 'admin/css/style.css'%}">
+    <!-- End layout styles -->
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png'%}" />
+  </head>
+  <body>
+    <div class="container-scroller">
+      <!-- partial:partials/_navbar.html -->
+      <nav class="navbar default-layout-navbar col-lg-12 col-12 p-0 fixed-top d-flex flex-row">
+        <div class="text-center navbar-brand-wrapper d-flex align-items-center justify-content-start">
+          <a class="navbar-brand brand-logo" href="{% url 'admin_dashboard' %}">
+            <img src="{% static 'admin/images/hospital.png' %}" alt="logo" 
+            style="width: 370px; height: 70px; max-width: 80%; max-height: 10%;">       
+          <a class="navbar-brand brand-logo-mini" href="index.html"><img src="{% static 'admin/images/logo-mini.svg'%}" alt="logo" /></a>
+        </div>
+        <div class="navbar-menu-wrapper d-flex align-items-stretch">
+          <button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+            <span class="mdi mdi-menu"></span>
+          </button>
+          <ul class="navbar-nav navbar-nav-right">
+            <li class="nav-item d-none d-lg-block full-screen-link">
+              <a class="nav-link">
+                <i class="mdi mdi-fullscreen" id="fullscreen-button"></i>
+              </a>
+            </li>
+            <li class="nav-item nav-logout d-none d-lg-block">
+              <a class="nav-link" href="{% url 'all_login' %}">
+                <i class="mdi mdi-power"></i>
+              </a>
+            </li>
+          </ul>
+          <button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+            <span class="mdi mdi-menu"></span>
+          </button>
+        </div>
+      </nav>
+      <!-- partial -->
+      <div class="container-fluid page-body-wrapper">
+        <!-- partial:partials/_sidebar.html -->
+        <nav class="sidebar sidebar-offcanvas" id="sidebar">
+          <ul class="nav">
+            <li class="nav-item nav-profile">
+              <a href="{% url 'admin_dashboard' %}" class="nav-link">
+                <div class="nav-profile-image">
+                  <img src="{% static 'admin/images/faces/face1.jpg' %}" alt="profile" />
+                  <span class="login-status online"></span>
+                  <!--change to offline or busy as needed-->
+                </div>
+                <div class="nav-profile-text d-flex flex-column">
+                  <span class="font-weight-bold mb-2">{{user.email}}</span>
+                  <span class="text-secondary text-small">Super Admin</span>
+                </div>
+                <i class="mdi mdi-bookmark-check text-success nav-profile-badge" style="margin-left:5px;margin-bottom:15px;"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                <span class="menu-title">Dashboard</span>
+                <i class="mdi mdi-home menu-icon"></i>
+              </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'specialization_list' %}" aria-expanded="false" aria-controls="icons">
+                  <span class="menu-title">Departments</span>
+                  <i class="mdi mdi-contacts menu-icon"></i>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#register-menu" aria-expanded="false" aria-controls="register-menu">
+                  <span class="menu-title">Register User Accounts</span>
+                  <i class="menu-arrow"></i>
+                  <i class="mdi mdi-crosshairs-gps menu-icon"></i>
+                </a>
+                <div class="collapse" id="register-menu">
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'register_doctor' %}">Register-Doctor</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'register_radio' %}">Register-Radiology</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'register_lab' %}">Register-Lab</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'register_nurse' %}">Register-Nurse</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'register_ph' %}">Register-Pharmacy</a> 
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              
+              <li class="nav-item">
+                <a class="nav-link" data-bs-toggle="collapse" href="#users-menu" aria-expanded="false" aria-controls="users-menu">
+                  <span class="menu-title">Manage User Accounts</span>
+                  <i class="menu-arrow"></i>
+                  <i class="mdi mdi-crosshairs-gps menu-icon"></i>
+                </a>
+                <div class="collapse" id="users-menu">
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'list_all_doctors' %}">Doctor List</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'list_all_nurse' %}">Nurse List</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'list_all_ph' %}">Pharmacist List</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'list_all_lab' %}">Lab List</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'list_all_radio' %}">Radiology List</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              
+              <li class="nav-item"> 
+                <a class="nav-link" data-bs-toggle="collapse" href="#icons" aria-expanded="false" aria-controls="icons">
+                  <span class="menu-title">Complaints/Ratings</span>
+                  <i class="mdi mdi-contacts menu-icon"></i>
+                </a>
+                <div class="collapse" id="icons">
+                  <ul class="nav flex-column sub-menu">
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'admin_complaints' %}">User Complaints</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="{% url 'admin_ratings' %}">User Ratings</a>
+                    </li>
+                  </ul>
+                </div>
+              </li>
+              
+           
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#forms" aria-expanded="false" aria-controls="forms">
+                <span class="menu-title">Report</span>
+                <i class="mdi mdi-format-list-bulleted menu-icon"></i>
+              </a>
+              <div class="collapse" id="forms">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item">
+                    <a class="nav-link" href="{% url 'report_counts' %}">Report</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <!-- <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#charts" aria-expanded="false" aria-controls="charts">
+                <span class="menu-title">Charts</span>
+                <i class="mdi mdi-chart-bar menu-icon"></i>
+              </a>
+              <div class="collapse" id="charts">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/charts/chartjs.html">ChartJs</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#tables" aria-expanded="false" aria-controls="tables">
+                <span class="menu-title">Tables</span>
+                <i class="mdi mdi-table-large menu-icon"></i>
+              </a>
+              <div class="collapse" id="tables">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/tables/basic-table.html">Basic table</a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-bs-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">
+                <span class="menu-title">User Pages</span>
+                <i class="menu-arrow"></i>
+                <i class="mdi mdi-lock menu-icon"></i>
+              </a>
+              <div class="collapse" id="auth">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/samples/blank-page.html"> Blank Page </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/samples/login.html"> Login </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/samples/register.html"> Register </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/samples/error-404.html"> 404 </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="pages/samples/error-500.html"> 500 </a>
+                  </li>
+                </ul>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="docs/documentation.html" target="_blank">
+                <span class="menu-title">Documentation</span>
+                <i class="mdi mdi-file-document-box menu-icon"></i>
+              </a>
+            </li> -->
+          </ul>
+        </nav>
+        <!-- partial -->
+        <div class="main-panel">
+            <div class="content-wrapper">
+            {% block content %}
+    
+       
+    
+            {% endblock %}
+            </div>
+          <!-- content-wrapper ends -->
+          <!-- partial:partials/_footer.html -->
+          <footer class="footer">
+            <div class="d-sm-flex justify-content-center justify-content-sm-between">
+              <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023 <a href="https://www.bootstrapdash.com/" target="_blank">BootstrapDash</a>. All rights reserved.</span>
+              <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="mdi mdi-heart text-danger"></i></span>
+            </div>
+          </footer>
+          <!-- partial -->
+        </div>
+        <!-- main-panel ends -->
+      </div>
+      <!-- page-body-wrapper ends -->
+    </div>
+    <!-- container-scroller -->
+    <!-- plugins:js -->
+    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js'%}"></script>
+    <script src="{% static 'admin/vendors/chart.js/chart.umd.js'%}"></script>
+    <script src="{% static 'admin/vendors/bootstrap-datepicker/bootstrap-datepicker.min.js'%}"></script>
+    <script src="{% static 'admin/js/off-canvas.js'%}"></script>
+    <script src="{% static 'admin/js/misc.js'%}"></script>
+    <script src="{% static 'admin/js/settings.js'%}"></script>
+    <script src="{% static 'admin/js/todolist.js'%}"></script>
+    <script src="{% static 'admin/js/jquery.cookie.js'%}"></script>
+    <script src="{% static 'admin/js/dashboard.js'%}"></script>
+  </body>
+</html>

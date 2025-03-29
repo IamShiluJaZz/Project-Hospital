@@ -1,0 +1,282 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Patient Registration</title>
+    <link rel="stylesheet" href="{% static 'admin/vendors/mdi/css/materialdesignicons.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/ti-icons/css/themify-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/css/vendor.bundle.base.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/vendors/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
+    <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container-scroller">
+        <div class="container-fluid page-body-wrapper full-page-wrapper">
+            <div class="content-wrapper d-flex align-items-center auth">
+                <div class="row flex-grow">
+                    <div class="col-lg-6 mx-auto">
+                        <div class="auth-form-light text-left p-5">
+                            <div class="brand-logo">
+                                <img src="{% static 'admin/images/hospital.png'%}">
+                            </div>
+                            <h4>Patient Registration</h4>
+                            
+                            {% if messages %}
+                                <div class="error-message">
+                                    {% for message in messages %}
+                                        <p>{{ message }}</p>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+
+                            <form class="pt-3" method="POST" id="patientForm">
+                                {% csrf_token %}
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="patient_name">Full Name</label>
+                                            <input type="text" class="form-control" id="patient_name" name="patient_name" required>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="phone">Phone</label>
+                                            <input type="tel" class="form-control" id="phone" name="phone" required pattern="\d{10}">
+                                            <span id="phoneStatus" class="status-container"></span>
+                                <span class="error" id="phoneError"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="emergency_contact">Emergency Contact</label>
+                                            <input type="tel" class="form-control" id="emergency_contact" name="emergency_contact" required pattern="\d{10}">
+                                            <span id="phoneStatus" class="status-container"></span>
+                                <span class="error" id="phoneError"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="email">Email</label>
+                                            <input type="email" class="form-control" id="email" name="email" required>
+                                            <span id="emailStatus" class="status-container"></span>
+                                            <span class="error" id="emailError"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="gender">Gender</label>
+                                            <div class="col-md-12">
+                                                <select name="gender" class="form-control" required>
+                                                    <option value="">Select Gender</option>
+                                                    {% for gender_value, gender_label in gender_choices %}
+                                                        <option value="{{ gender_value }}">{{ gender_label }}</option>
+                                                    {% endfor %}
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="address">Address</label>
+                                            <input type="text" class="form-control" id="address" name="address" required>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Password Field -->
+                                    <div class="col-md-6">
+                                        <div class="form-group position-relative">
+                                            <label for="password">Password</label>
+                                            <input type="password" class="form-control" id="password" name="password" required>
+                                            <span class="toggle-password" onclick="togglePassword('password', 'toggleIcon1')" 
+                                                  style="position: absolute; right: 15px; top: 70%; transform: translateY(-50%); cursor: pointer;">
+                                                <i class="fa fa-eye" id="toggleIcon1"></i>
+                                            </span>
+                                            <small id="passwordError" class="text-danger"></small>
+                                        </div>
+                                    </div>
+                                
+                                    <!-- Confirm Password Field -->
+                                    <div class="col-md-6">
+                                        <div class="form-group position-relative">
+                                            <label for="confirm_password">Confirm Password</label>
+                                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                                            <span class="toggle-password" onclick="togglePassword('confirm_password', 'toggleIcon2')" 
+                                                  style="position: absolute; right: 15px; top: 70%; transform: translateY(-50%); cursor: pointer;">
+                                                <i class="fa fa-eye" id="toggleIcon2"></i>
+                                            </span>
+                                            <small id="confirmPasswordError" class="text-danger"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+
+                                <div class="mt-3 d-grid gap-2">
+                                    <button class="btn btn-block btn-gradient-primary btn-lg font-weight-medium auth-form-btn" type="submit">
+                                        REGISTER
+                                    </button>
+                                </div>
+                            </form>
+
+                            <br>
+                            <div class="my-2 d-flex justify-content-between align-items-center">
+                                <a href="{% url 'all_login' %}" class="auth-link text-primary">Already have an account? Login</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            let today = new Date().toISOString().split('T')[0];
+            document.querySelector("input[name='date_of_birth']").setAttribute("max", today);
+        });
+    
+        document.addEventListener("DOMContentLoaded", function () {
+        const passwordInput = document.getElementById("password");
+        const confirmPasswordInput = document.getElementById("confirm_password");
+        const passwordError = document.getElementById("passwordError");
+        const confirmPasswordError = document.getElementById("confirmPasswordError");
+        
+        passwordInput.addEventListener("input", validatePasswordStrength);
+        confirmPasswordInput.addEventListener("input", checkPasswordMatch);
+    
+        function validatePasswordStrength() {
+            let password = passwordInput.value;
+            let messages = [];
+    
+            if (password.length < 8) {
+                messages.push("At least 8 characters required.");
+            }
+            if (!/[A-Z]/.test(password)) {
+                messages.push("At least one uppercase letter.");
+            }
+            if (!/[0-9]/.test(password)) {
+                messages.push("At least one number.");
+            }
+            if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+                messages.push("At least one special character.");
+            }
+    
+            if (messages.length > 0) {
+                passwordError.innerHTML = messages.join("<br>");
+            } else {
+                passwordError.innerHTML = "";
+            }
+        }
+    
+        function checkPasswordMatch() {
+            if (passwordInput.value !== confirmPasswordInput.value) {
+                confirmPasswordError.textContent = "Passwords do not match!";
+            } else {
+                confirmPasswordError.textContent = "";
+            }
+        }
+    
+        document.getElementById("doctorForm").addEventListener("submit", function (event) {
+            validatePasswordStrength();
+            checkPasswordMatch();
+            
+            if (passwordError.textContent !== "" || confirmPasswordError.textContent !== "") {
+                event.preventDefault(); // Prevent form submission if errors exist
+            }
+        });
+    });
+    
+    </script>
+
+
+<script>
+    function checkAvailability(field, value, statusElement, errorElement) {
+        if (value.length > 0) {
+            $.ajax({
+                url: "{% url 'check_availability' %}",
+                data: { field: field, value: value },
+                dataType: "json",
+                success: function(response) {
+                    if (response.exists) {
+                        $(statusElement).text("").removeClass("available").addClass("not-available");
+                        $(errorElement).text(field.charAt(0).toUpperCase() + field.slice(1) + " already exists").css("color", "red");
+                    } else {
+                        $(statusElement).text("").removeClass("not-available").addClass("available");
+                        $(errorElement).text("✔ " + field.charAt(0).toUpperCase() + field.slice(1) + " is available").css("color", "green");
+                    }
+                }
+            });
+        } else {
+            $(statusElement).text("");
+            $(errorElement).text("");
+        }
+    }
+
+    $(document).ready(function() {
+        $("input[name='email']").on("keyup blur", function() {
+            checkAvailability("email", $(this).val(), "#emailStatus", "#emailError");
+        });
+
+        $("input[name='phone']").on("keyup blur", function() {
+            let phoneInput = $(this).val();
+            // Remove any non-numeric characters
+            phoneInput = phoneInput.replace(/\D/g, '');
+            $(this).val(phoneInput);
+
+            // Validate length (optional, adjust as needed)
+            if (phoneInput.length < 10) {
+                $("#phoneError").text("Phone number must be at least 10 digits.");
+            } else {
+                $("#phoneError").text("");
+                checkAvailability("phone", phoneInput, "#phoneStatus", "#phoneError");
+            }
+        });
+
+        $("#patientForm").submit(function(e) {
+            if ($("#emailError").text().includes("already exists") || $("#phoneError").text().includes("already exists")) {
+                alert("Please fix the errors before submitting the form.");
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+
+    <script src="{% static 'admin/vendors/js/vendor.bundle.base.js' %}"></script>
+    <script src="{% static 'admin/js/off-canvas.js' %}"></script>
+    <script src="{% static 'admin/js/misc.js' %}"></script>
+    <script src="{% static 'admin/js/settings.js' %}"></script>
+    <script src="{% static 'admin/js/todolist.js' %}"></script>
+    <script src="{% static 'admin/js/jquery.cookie.js' %}"></script>
+    <script>
+        function togglePassword(inputId, iconId) {
+            var passwordField = document.getElementById(inputId);
+            var toggleIcon = document.getElementById(iconId);
+    
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                toggleIcon.classList.remove("fa-eye");
+                toggleIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                toggleIcon.classList.remove("fa-eye-slash");
+                toggleIcon.classList.add("fa-eye");
+            }
+        }
+    </script>
+    
+</body>
+</html>

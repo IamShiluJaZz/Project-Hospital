@@ -1,0 +1,16 @@
+{% extends 'doctor/doctor_lay.html' %}
+{% block content %}
+
+<div class="container mt-4"><br><br><br>
+  <div class="card p-4 shadow">
+    <h3 class="mb-4">Confirm Deletion</h3>
+    <p>Are you sure you want to delete the prescription for <strong>{{ prescription.patient_name }}</strong> (MR No: <strong>{{ prescription.patient_id }}</strong>)?</p>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Confirm Delete</button>
+      <a href="{% url 'list_prescriptions' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

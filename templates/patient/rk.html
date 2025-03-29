@@ -1,0 +1,90 @@
+{% extends 'patient/patient_layout.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Your Medical Reports</h2>
+
+    <div class="table-responsive">
+        <table class="table table-striped table-hover shadow-lg rounded">
+            <thead class="table-dark">
+                <tr>
+                    <th>Patient ID</th>
+                    <th>Report Type</th>
+                    <th>Name / Test</th>
+                    <th>Analysis</th>
+                    <th>Download</th>
+                    <th>Created Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Medical Reports -->
+                {% for report in medical_reports %}
+                <tr>
+                    <td>{{ report.patient_id }}</td>
+                    <td><span class="badge bg-primary">Medical Report</span></td>
+                    <td>{{ report.name }}</td>
+                    <td>-</td>
+                    <td>
+                        {% if report.medical_report_file %}
+                            <a href="{{ report.medical_report_file.url }}" class="btn btn-sm btn-success" target="_blank">Download</a>
+                        {% else %}
+                            <span class="text-danger">No File</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ report.created_at }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No Medical Reports Available</td>
+                </tr>
+                {% endfor %}
+
+                <!-- Lab Test Reports -->
+                {% for report in test_reports %}
+                <tr>
+                    <td>{{ report.patient.patient_id }}</td>
+                    <td><span class="badge bg-warning text-dark">Lab Test</span></td>
+                    <td>{{ report.test }}</td>
+                    <td>{{ report.test_result_analysis }}</td>
+                    <td>
+                        {% if report.test_upload %}
+                            <a href="{{ report.test_upload.url }}" class="btn btn-sm btn-success" target="_blank">Download</a>
+                        {% else %}
+                            <span class="text-danger">No File</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ report.created_date }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No Lab Test Reports Available</td>
+                </tr>
+                {% endfor %}
+
+                <!-- Radiology Test Reports -->
+                {% for report in radio_reports %}
+                <tr>
+                    <td>{{ report.patient.patient_id }}</td>
+                    <td><span class="badge bg-info">Radiology Test</span></td>
+                    <td>{{ report.test }}</td>
+                    <td>{{ report.test_result_analysis }}</td>
+                    <td>
+                        {% if report.test_upload %}
+                            <a href="{{ report.test_upload.url }}" class="btn btn-sm btn-success" target="_blank">Download</a>
+                        {% else %}
+                            <span class="text-danger">No File</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ report.created_date }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No Radiology Reports Available</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

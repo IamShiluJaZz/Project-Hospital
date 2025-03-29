@@ -1,0 +1,137 @@
+{% extends 'nurse/nurse_lay.html' %}
+{% load static %}
+{% block content %}
+<br><br><br><br>s
+<div class="row">
+    <div class="col-lg-12 stretch-card">
+        <div class="card" style="margin-left: 290px;">
+            <div class="card-body">
+                <p class="card-description">
+                    <button class="btn btn-sm btn-success">
+                        <a href="{% url 'create_documentation_patient' %}" class="text-white text-decoration-none">Add New</a>
+                    </button>
+                    <h3>Patient Documentation List</h3>
+                </p>
+                <div class="table-responsive" style="overflow-x: auto;">
+                    <table class="table table-bordered" id="documentationTable">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Patient ID</th>
+                                <th>Temperature (°C)</th>
+                                <th>Heart Rate (bpm)</th>
+                                <th>Blood Pressure (mmHg)</th>
+                                <th>Respiratory Rate</th>
+                                <th>Oxygen Level (%)</th>
+                                <th>Discharge Date</th>
+                                <th>Notes</th>
+                                <th>Recorded At</th>
+                            </tr>
+                        </thead>
+                        <tbody id="docBody">
+                            {% for doc in documentations %}
+                            <tr id="doc-{{ doc.id }}">
+                                <td>{{ forloop.counter }}</td>
+                                <td>{{ doc.ward_assignment.prescription.patient_id }} - {{ doc.ward_assignment.ward }} - Bed {{ doc.ward_assignment.bed_number }}</td>
+                                <td contenteditable="true" data-id="{{ doc.id }}" data-field="temperature">{{ doc.temperature }}</td>
+                                <td contenteditable="true" data-id="{{ doc.id }}" data-field="heart_rate">{{ doc.heart_rate }}</td>
+                                <td contenteditable="true" data-id="{{ doc.id }}" data-field="blood_pressure">{{ doc.blood_pressure }}</td>
+                                <td contenteditable="true" data-id="{{ doc.id }}" data-field="respiratory_rate">{{ doc.respiratory_rate }}</td>
+                                <td contenteditable="true" data-id="{{ doc.id }}" data-field="oxygen_level">{{ doc.oxygen_level }}</td>
+                                <td class="discharge-date" data-id="{{ doc.id }}" data-field="discharge_date">{{ doc.discharge_date }}</td>
+                                <td contenteditable="true" data-id="{{ doc.id }}" data-field="notes">{{ doc.notes }}</td>
+                                <td>{{ doc.recorded_at }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="9" class="text-center">No documentation available.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery and jQuery UI for AJAX and DatePicker -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        // Inline editing for non-date fields
+        $("#documentationTable").on("blur", "td[contenteditable=true]", function () {
+            const docId = $(this).data("id");
+            const field = $(this).data("field");
+            const value = $(this).text().trim();
+
+            // AJAX request to update the field
+            $.ajax({
+                url: "{% url 'update_documentation_patient' %}",
+                method: "POST",
+                data: {
+                    'id': docId,
+                    'field': field,
+                    'value': value,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'
+                },
+                success: function (response) {
+                    alert(response.success ? "Update successful!" : "Failed to update!");
+                },
+                error: function () {
+                    alert("Error updating data!");
+                }
+            });
+        });
+
+        // Discharge Date Editing with DatePicker
+        $("#documentationTable").on("click", ".discharge-date", function () {
+            const cell = $(this);
+            const originalValue = cell.text().trim();
+
+            // Create DatePicker input field
+            const input = $('<input>', {
+                type: 'text',
+                value: originalValue,
+                class: 'form-control'
+            }).datepicker({
+                dateFormat: 'yy-mm-dd',  // Adjust format as needed
+                changeMonth: true,
+                changeYear: true,
+                onSelect: function (dateText) {
+                    cell.text(dateText);
+
+                    // AJAX to update the selected date
+                    $.ajax({
+                        url: "{% url 'update_documentation_patient' %}",
+                        method: "POST",
+                        data: {
+                            'id': cell.data("id"),
+                            'field': 'discharge_date',
+                            'value': dateText,
+                            'csrfmiddlewaretoken': '{{ csrf_token }}'
+                        },
+                        success: function (response) {
+                            alert(response.success ? "Date updated successfully!" : "Failed to update the date.");
+                        },
+                        error: function () {
+                            alert("Error updating the date.");
+                        }
+                    });
+                },
+                onClose: function () {
+                    $(this).remove();
+                }
+            });
+
+            // Clear cell, append input, and focus
+            cell.empty().append(input);
+            input.focus();
+        });
+    });
+</script>
+
+{% endblock %}

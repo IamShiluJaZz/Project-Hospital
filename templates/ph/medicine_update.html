@@ -1,0 +1,313 @@
+{% extends 'ph/ph_lay.html' %}
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="card">
+                    <div class="card-header">
+                        <h4>Edit Medicine</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST" action="{% url 'edit_medicine' medicine.id %}">
+                            {% csrf_token %}
+
+                            <div class="form-group">
+                                <label>Medicine Name</label>
+                                <div class="input-group">
+                                    <select class="form-control" name="medicine_name" id="medicine_name" required>
+                                        {% for medicine_name in medicine_names %}
+                                        <option value="{{ medicine_name.id }}" {% if medicine_name.id == medicine.medicine_name.id %}selected{% endif %}>
+                                            {{ medicine_name.medicine_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn btn-primary" onclick="openModal('medicine_name')">+</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Category</label>
+                                <div class="input-group">
+                                    <select class="form-control" name="category" id="category" required>
+                                        {% for category in categories %}
+                                        <option value="{{ category.id }}" {% if category.id == medicine.category.id %}selected{% endif %}>
+                                            {{ category.cat_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn btn-primary" onclick="openModal('cat_name')">+</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Supplier</label>
+                                <div class="input-group">
+                                    <select class="form-control" name="supplier" id="supplier" required>
+                                        {% for supplier in suppliers %}
+                                        <option value="{{ supplier.id }}" {% if supplier.id == medicine.supplier.id %}selected{% endif %}>
+                                            {{ supplier.supplier_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn btn-primary" onclick="openModal('supplier_name')">+</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Manufacture</label>
+                                <div class="input-group">
+                                    <select class="form-control" name="manufacture" id="manufacture" required>
+                                        {% for manufacture in manufactures %}
+                                        <option value="{{ manufacture.id }}" {% if manufacture.id == medicine.manufacture.id %}selected{% endif %}>
+                                            {{ manufacture.manufature_name }}
+                                        </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="button" class="btn btn-primary" onclick="openModal('manufacture_name')">+</button>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Batch No</label>
+                                <input type="text" name="batch_no" class="form-control" value="{{ medicine.batch_no }}" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Quantity</label>
+                                <input type="number" name="quantity" class="form-control" value="{{ medicine.quantity }}" required min="1">
+                            </div>
+
+                            <div class="form-group">
+                                <label>Expiry Date</label>
+                                <input type="date" name="expiry_date" class="form-control" id="expiry_date" value="{{ medicine.expiry_date|date:'Y-m-d' }}" required>
+                                <small id="expiryValidationMessage" style="color: red;"></small>
+                            </div>
+                            
+
+                            <div class="form-group">
+                                <label>Description</label>
+                                <textarea name="description" class="form-control" required>{{ medicine.description }}</textarea>
+                            </div>
+
+                            <div class="form-group">
+                                <label>Price</label>
+                                <input type="number"  name="price" class="form-control" value="{{ medicine.price }}" min="1" required>
+                            </div>
+
+                            <button type="submit" class="btn btn-primary">Update Medicine</button>
+                            <a href="{% url 'medicine_list' %}" class="btn btn-secondary">Cancel</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<!-- <div id="addNewModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Item</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="newItemName" class="form-control" placeholder="Enter name" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveNewItem()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentType;
+
+function openModal(type) {
+    currentType = type;
+    document.getElementById("newItemName").value = "";
+    $("#addNewModal").modal("show");
+}
+
+function saveNewItem() {
+    let name = document.getElementById("newItemName").value;
+    if (!name) return;
+
+    let urlMap = {
+        'medicine_name': "/add_medicine_name/",
+        'cat_name': "/add_category/",
+        'supplier_name': "/add_supplier/",
+        'manufacture_name': "/add_manufacture/"
+    };
+
+    let selectMap = {
+        'medicine_name': "medicine_name",
+        'cat_name': "category",
+        'supplier_name': "supplier",
+        'manufacture_name': "manufacture"
+    };
+
+    fetch(urlMap[currentType], {
+        method: "POST",
+        headers: { 
+            "X-CSRFToken": "{{ csrf_token }}", 
+            "Content-Type": "application/x-www-form-urlencoded" 
+        },
+        body: new URLSearchParams({ [currentType]: name })
+    })
+    .then(response => response.json())
+    .then(data => {
+        let select = document.getElementById(selectMap[currentType]);
+        let option = new Option(data.name, data.id);
+        select.add(option);
+        select.value = data.id;
+        $("#addNewModal").modal("hide");
+    })
+    .catch(error => console.error("Error:", error));
+} -->
+
+
+
+
+<div id="addNewModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add New Item</h5>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <input type="text" id="newItemName" class="form-control" placeholder="Enter name" required>
+                <small id="validationMessage"></small>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" onclick="saveNewItem()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+
+
+let currentType;
+
+function openModal(type) {
+    currentType = type;
+    document.getElementById("newItemName").value = "";
+    document.getElementById("validationMessage").textContent = ""; // Clear previous messages
+    $("#addNewModal").modal("show");
+}
+
+document.getElementById("newItemName").addEventListener("input", function () {
+    let name = this.value.toLowerCase().replace(/\s+/g, ""); // Remove spaces and convert to lowercase
+    if (!name) {
+        document.getElementById("validationMessage").textContent = "";
+        return;
+    }
+
+    let urlMap = {
+        "medicine_name": "/add_medicine_name/",
+        "cat_name": "/add_category/",
+        "supplier_name": "/add_supplier/",
+        "manufacture_name": "/add_manufacture/",
+    };
+
+    fetch(urlMap[currentType], {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ [currentType]: name, "check": "1" }), // Send normalized name
+    })
+        .then((response) => response.json().then((data) => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            let validationMsg = document.getElementById("validationMessage");
+            if (status === 400) {
+                validationMsg.textContent = body.error;
+                validationMsg.style.color = "red";
+            } else {
+                validationMsg.textContent = "Name available!";
+                validationMsg.style.color = "green";
+            }
+        })
+        .catch((error) => console.error("Error:", error));
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    let expiryDateInput = document.getElementById("expiry_date");
+    let today = new Date().toISOString().split("T")[0]; // Get today's date in YYYY-MM-DD format
+    expiryDateInput.setAttribute("min", today); // Set the minimum date
+
+    expiryDateInput.addEventListener("change", function () {
+        let selectedDate = new Date(this.value);
+        let todayDate = new Date();
+        todayDate.setHours(0, 0, 0, 0); // Remove time part for proper comparison
+
+        let validationMessage = document.getElementById("expiryValidationMessage");
+        if (selectedDate < todayDate) {
+            validationMessage.textContent = "Expiry date must be in the future!";
+            this.value = ""; // Clear invalid date
+        } else {
+            validationMessage.textContent = "";
+        }
+    });
+})
+
+
+function saveNewItem() {
+    let name = document.getElementById("newItemName").value.trim();
+    if (!name) return;
+
+    let validationMsg = document.getElementById("validationMessage");
+    if (validationMsg.textContent === "Name already exists") return; // Prevent saving
+
+    let urlMap = {
+        "medicine_name": "/add_medicine_name/",
+        "cat_name": "/add_category/",
+        "supplier_name": "/add_supplier/",
+        "manufacture_name": "/add_manufacture/",
+    };
+
+    let selectMap = {
+        "medicine_name": "medicine_name",
+        "cat_name": "category",
+        "supplier_name": "supplier",
+        "manufacture_name": "manufacture",
+    };
+
+    fetch(urlMap[currentType], {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ [currentType]: name }),
+    })
+        .then((response) => response.json().then((data) => ({ status: response.status, body: data })))
+        .then(({ status, body }) => {
+            if (status === 400) {
+                validationMsg.textContent = body.error;
+                validationMsg.style.color = "red";
+            } else {
+                let select = document.getElementById(selectMap[currentType]);
+                let option = new Option(body.name, body.id);
+                select.add(option);
+                select.value = body.id;
+                $("#addNewModal").modal("hide");
+            }
+        })
+        .catch((error) => console.error("Error:", error));
+}
+
+</script>
+
+{% endblock %}

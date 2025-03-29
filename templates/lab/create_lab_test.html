@@ -1,0 +1,133 @@
+{% extends 'lab/lab_lay.html' %}
+{% load static %}
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <div class="card shadow-lg p-4">
+                        <h3 class="text-center mb-4">Create Lab Test</h3>
+                        
+                        <form method="post" enctype="multipart/form-data" id="labTestForm">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Test Name:</label>
+                                <select name="test_name" class="form-select" required>
+                                    <option value="">Select Test Name</option>
+                                    {% for value, label in test_names %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Test Type:</label>
+                                <select name="test_type" class="form-select" required>
+                                    <option value="">Select Test Type</option>
+                                    {% for value, label in test_types %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label">Price:</label>
+                                <input type="number" name="price" class="form-control" step="0.01" required>
+                                <small id="priceError" class="text-danger"></small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Description:</label>
+                                <textarea name="description" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Upload Image:</label>
+                                <input type="file" name="image" class="form-control">
+                                <small id="imageError" class="text-danger"></small>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary" id="submitButton" disabled>Create Test</button>
+                                <a href="{% url 'lab_test_list' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if messages %}
+    <div class="alert alert-danger">
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const priceInput = document.querySelector("input[name='price']");
+    const imageInput = document.querySelector("input[name='image']");
+    const testNameSelect = document.querySelector("select[name='test_name']");
+    const testTypeSelect = document.querySelector("select[name='test_type']");
+    const submitButton = document.querySelector("#submitButton");
+
+    function validateForm() {
+        const price = parseFloat(priceInput.value);
+        const file = imageInput.files[0];
+        let isValid = true;
+
+        // Validate Test Name and Test Type
+        if (!testNameSelect.value) {
+            isValid = false;
+        }
+        if (!testTypeSelect.value) {
+            isValid = false;
+        }
+
+        // Validate Price on Blur
+        const priceError = document.getElementById("priceError");
+        priceInput.addEventListener("blur", function () {
+            if (isNaN(price) || price < 0) {
+                priceError.textContent = "Price cannot be negative.";
+                priceError.style.color = "red";
+                isValid = false;
+            } else {
+                priceError.textContent = "";
+            }
+            submitButton.disabled = !isValid;
+        });
+
+        // Validate Image
+        const imageError = document.getElementById("imageError");
+        if (file) {
+            const allowedExtensions = ["image/jpeg", "image/png", "image/jpg"];
+            if (!allowedExtensions.includes(file.type)) {
+                imageError.textContent = "Only JPG, PNG, and JPEG formats are allowed.";
+                imageError.style.color = "red";
+                isValid = false;
+            } else {
+                imageError.textContent = "";
+            }
+        }
+
+        submitButton.disabled = !isValid;
+    }
+
+    // Event Listeners
+    priceInput.addEventListener("change", validateForm);
+    imageInput.addEventListener("change", validateForm);
+    testNameSelect.addEventListener("change", validateForm);
+    testTypeSelect.addEventListener("change", validateForm);
+});
+</script>
+
+{% endblock %}

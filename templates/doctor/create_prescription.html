@@ -1,0 +1,348 @@
+{% extends 'doctor/doctor_lay.html' %}
+{% load static %}
+{% block content %}
+
+<div class="pcoded-content">
+  <div class="pcoded-inner-content">
+    <div class="main-body">
+      <div class="page-wrapper">
+        <div class="container mt-4">
+          <div class="card shadow-lg p-4">
+            <div class="header_logo text-center">
+              <img src="{% static 'admin/images/hospital.png' %}" alt="Hospital Logo" style="max-width: 250px;">
+            </div><br>
+            <h3 class="text-center mb-4">Create Prescription</h3>
+            
+            <!-- Filter Section: Date & Appointment Dropdown -->
+            <div class="mb-3">
+              <label class="form-label">Prescription / Appointment Date:</label>
+              <div class="input-group">
+                <input type="date" id="selected_date" name="selected_date" class="form-control"
+                  value="{% if selected_date %}{{ selected_date }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}" required>&nbsp;
+                <button type="button" id="filter-appointments" class="btn btn-info">Filter Appointments</button>
+              </div>
+            </div>
+            
+            {% if selected_date %}
+                {% if appointments %}
+                    <div class="mb-3">
+                        <label class="form-label">Appointments on Selected Date (MR Nos):</label>
+                        <select id="appointment_dropdown" class="form-select">
+                          <option value="">-- Select Appointment --</option>
+                          {% for appointment in appointments %}
+                            <option value="{{ appointment.patient_mr }}">
+                              {{ appointment.patient_mr }} - {{ appointment.patient.name }}
+                            </option>
+                          {% endfor %}
+                        </select>
+                        <small class="text-muted">For reference only. Please enter the Patient ID manually below.</small>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">
+                        No appointments found for the selected date.
+                    </div>
+                {% endif %}
+            {% endif %}
+            
+            <!-- Prescription Form -->
+            <form method="post" id="prescriptionForm">
+              {% csrf_token %}
+              <!-- Hidden input for Prescription/Appointment Date -->
+              <input type="hidden" id="form_date" name="date" value="{% if selected_date %}{{ selected_date }}{% else %}{{ today|date:'Y-m-d' }}{% endif %}">
+              
+              <div class="card p-3 mb-4">
+                <h5 class="text-primary mb-3">🩺 Patient Details</h5>
+              
+                <!-- Manual Patient ID Input -->
+                <div class="mb-3">
+                  <label class="form-label">Patient ID (MR No):</label>
+                  <input type="text" id="patient_id" name="patient_id" class="form-control" placeholder="Enter MR No" required>
+                  <small class="text-danger" id="mr_error"></small>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Patient Name:</label>
+                  <input type="text" id="patient_name" name="patient_name" class="form-control" readonly required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Age:</label>
+                  <input type="number" id="age" name="age" class="form-control" required>
+                  <small class="text-danger" id="age_error"></small>
+                </div>
+              </div>
+              
+              <!-- Patient Details (Dynamically Displayed) -->
+              <div id="patient-details" class="mt-3 d-none">
+                <h5 class="text-primary mb-3">Patient Information and their Medical History </h5>
+                <ul class="list-group">
+                  <li class="list-group-item"><strong>Name:</strong> <span id="detail-name"></span></li>
+                  <li class="list-group-item"><strong>Gender:</strong> <span id="patient-gender"></span></li>
+                  <li class="list-group-item"><strong>Blood Group:</strong> <span id="patient-blood-group"></span></li>
+                  <li class="list-group-item"><strong>Marital Status:</strong> <span id="patient-marital-status"></span></li>
+                  <li class="list-group-item"><strong>Date of Birth:</strong> <span id="patient-dob"></span></li>
+                  <li class="list-group-item"><strong>Allergies:</strong> <span id="patient-allergies"></span></li>
+                  <li class="list-group-item"><strong>Existing Conditions:</strong> <span id="patient-conditions"></span></li>
+                  <li class="list-group-item"><strong>Ongoing Medications:</strong> <span id="patient-ongoing-medications"></span></li>
+                  <li class="list-group-item"><strong>Previous Surgeries:</strong> <span id="patient-previous-surgeries"></span></li>
+                  <li class="list-group-item"><strong>Medical Report:</strong> <a id="patient-report-file" href="#" target="_blank">View Report</a></li>
+                </ul>
+              </div><br><br>
+              
+              <div class="card p-3 mb-4">
+                <h5 class="text-primary">💊 Medicine to be Prescribed</h5>
+                <div id="medicine-container" class="mt-4">
+                  <div class="row mb-3 medicine-row d-flex align-items-end gap-4">
+                    
+                    <!-- Medicine Dropdown -->
+                    <div class="col-md-2">
+                      <label class="form-label">Medicine:</label>
+                      <select name="medicine[]" class="form-select" required>
+                        <option value="">Select Medicine</option>
+                        {% for med in medicines %}
+                          <option value="{{ med.id }}">{{ med.medicine_name.medicine_name }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+              
+                    <!-- Category Dropdown -->
+                    <div class="col-md-2">
+                        <label class="form-label">Category:</label>
+                        <select name="category[]" class="form-select" required>
+                          <option value="">Select Category</option>
+                          {% for category in categories %}
+                            <option value="{{ category.id }}">{{ category.cat_name }}</option>
+                          {% endfor %}
+                        </select>
+                      </div>
+                    
+                    <!-- Quantity Input -->
+                    <div class="col-md-2">
+                      <label class="form-label">Qty:</label>
+                      <input type="number" name="quantity[]" class="form-control" style="font-size: 0.75rem;" required>
+                    </div>
+              
+                    <!-- Frequency Dropdown -->
+                    <div class="col-md-2">
+                      <label class="form-label">Frequency:</label>
+                      <select name="frequency[]" class="form-select" required>
+                        <option value="">Select Frequency</option>
+                        {% for value, label in frequency_choices %}
+                          <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                      </select>
+                    </div>
+              
+                    <!-- Add Button -->
+                    <div class="col-md-2">
+                      <button type="button" class="btn btn-success add-row">+</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Tests Section -->
+              <div class="card p-2  mb-4">
+                <h5 class="text-primary">🧪 Tests to be Done</h5><br>
+                <div class="row"><br>
+                  <!-- Multi-Select Lab Tests -->
+                  <div class="col-md-2">
+                    <label class="form-label">Lab Tests (Optional):</label>
+                    <select name="lab[]" class="form-select" multiple>
+                      {% for lab in labs %}
+                        <option value="{{ lab.id }}">{{ lab.test_name }}</option>
+                      {% endfor %}
+                    </select><br>
+                    <small class="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+                  </div><br><br>
+          
+                  <!-- Multi-Select Radio Tests -->
+                  <div class="col-md-2">
+                    <label class="form-label">Radio Tests (Optional):</label>
+                      <select name="radio[]" class="form-select" multiple>
+                        {% for radio in radios %}
+                          <option value="{{ radio.id }}">{{ radio.test_name }}</option>
+                        {% endfor %}
+                      </select><br>
+                      <small class="text-muted">Hold Ctrl (Windows) or Command (Mac) to select multiple options.</small>
+                  </div>
+                </div><br>
+              </div>
+              
+              <!-- Note Section -->
+              <div class="mb-3">
+                <label class="form-label">Note:</label>
+                <textarea name="note" class="form-control" rows="3"></textarea>
+              </div>
+              
+              <div class="text-center">
+                <button type="submit" class="btn btn-primary" id="submit-btn" disabled>Save Prescription</button>
+                <a href="{% url 'list_prescriptions' %}" class="btn btn-secondary">Cancel</a>
+              </div>
+            </form>
+          </div> <!-- End card -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const form = document.getElementById('prescriptionForm');
+  const submitBtn = document.getElementById('submit-btn');
+  const patientIdField = document.getElementById('patient_id');
+  const ageField = document.getElementById('age');
+  const mrError = document.getElementById('mr_error');
+  const ageError = document.getElementById('age_error');
+  const appointmentDropdown = document.getElementById('appointment_dropdown');
+
+  function validateForm() {
+    const mrNo = patientIdField.value.trim();
+    const age = parseInt(ageField.value);
+    const selectedDate = document.getElementById('selected_date').value;
+    
+    // Check if entered MR No exists in appointment dropdown
+    let validMR = false;
+    if (appointmentDropdown) {
+      for (let option of appointmentDropdown.options) {
+        if (option.value === mrNo) {
+          validMR = true;
+          break;
+        }
+      }
+    }
+    if (!validMR && mrNo !== "") {
+      mrError.textContent = "Invalid MR Number. No appointment exists for the selected date.";
+      submitBtn.disabled = true;
+      return;
+    } else {
+      mrError.textContent = "";
+    }
+    
+    // Validate duplicate prescription via AJAX
+    if (mrNo !== "") {
+      fetch(`/check-prescription-exists/${mrNo}/${selectedDate}/`)
+      .then(response => response.json())
+      .then(data => {
+        if (data.exists) {
+          mrError.textContent = "A prescription already exists for this MR Number on the selected date.";
+          submitBtn.disabled = true;
+        } else {
+          mrError.textContent = "";
+          // Only enable submit if age validation passes too
+          if (!isNaN(age) && age > 0) {
+            submitBtn.disabled = false;
+          }
+        }
+      })
+      .catch(error => console.error('Error checking prescription:', error));
+    }
+    
+    // Validate Age dynamically
+    if (isNaN(age) || age <= 0) {
+      ageError.textContent = "Age must be a positive number.";
+      submitBtn.disabled = true;
+      return;
+    } else {
+      ageError.textContent = "";
+    }
+  }
+  
+  patientIdField.addEventListener('input', validateForm);
+  ageField.addEventListener('input', validateForm);
+  
+  // Intercept form submission for final check
+  form.addEventListener("submit", function(e) {
+    validateForm();
+    if (submitBtn.disabled) {
+      e.preventDefault();
+      alert("Please correct the errors before submitting the form.");
+    }
+  });
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Filter appointments based on selected date.
+  const filterBtn = document.getElementById("filter-appointments");
+  filterBtn.addEventListener("click", function () {
+    const selectedDate = document.getElementById("selected_date").value;
+    if (selectedDate) {
+      window.location.href = `?date=${selectedDate}`;
+    }
+  });
+
+  // Dynamic Medicine Row Add/Remove.
+  const container = document.getElementById("medicine-container");
+  document.addEventListener("click", function (event) {
+    if (event.target.classList.contains("add-row")) {
+      event.preventDefault();
+      const row = event.target.closest(".medicine-row");
+      const newRow = row.cloneNode(true);
+      newRow.querySelectorAll("input, select").forEach(field => {
+        if (field.tagName === "INPUT") field.value = "";
+        else field.selectedIndex = 0;
+      });
+      const button = newRow.querySelector(".add-row");
+      button.classList.remove("btn-success", "add-row");
+      button.classList.add("btn-danger", "remove-row");
+      button.innerText = "-";
+      container.appendChild(newRow);
+    }
+    if (event.target.classList.contains("remove-row")) {
+      event.preventDefault();
+      if (container.querySelectorAll(".medicine-row").length > 1) {
+        event.target.closest(".medicine-row").remove();
+      } else {
+        alert("At least one row is required.");
+      }
+    }
+  });
+
+  // Auto-fill patient details when Patient ID (MR No) is entered.
+  const patientIdField = document.getElementById("patient_id");
+  const patientNameField = document.getElementById("patient_name");
+  const patientDetailsDiv = document.getElementById("patient-details");
+
+  patientIdField.addEventListener("blur", function () {
+    const enteredMR = this.value.trim();
+    if (enteredMR !== "") {
+      fetch(`/get_patient_details/${enteredMR}/`)
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            patientNameField.value = data.name || "";
+            patientDetailsDiv.classList.remove("d-none");
+            document.getElementById("detail-name").innerText = data.name || "";
+            document.getElementById("patient-gender").innerText = data.gender || "";
+            document.getElementById("patient-blood-group").innerText = data.blood_group || "N/A";
+            document.getElementById("patient-marital-status").innerText = data.marital_status || "";
+            document.getElementById("patient-dob").innerText = data.date_of_birth || "";
+            document.getElementById("patient-allergies").innerText = data.allergies || "None";
+            document.getElementById("patient-conditions").innerText = data.existing_conditions || "None";
+            document.getElementById('patient-ongoing-medications').innerText = data.ongoing_medications || "None";
+            document.getElementById('patient-previous-surgeries').innerText = data.previous_surgeries || "None";
+          
+            const reportLink = document.getElementById('patient-report-file');
+            if (data.medical_report_file) {
+              reportLink.href = data.medical_report_file;
+              reportLink.innerText = "View Report";
+            } else {
+              reportLink.innerText = "No Report Available";
+              reportLink.removeAttribute('href');
+            }
+          } else {
+            alert("Patient not found.");
+            patientNameField.value = "";
+            patientDetailsDiv.classList.add("d-none");
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching patient details:", error);
+          patientNameField.value = "";
+          patientDetailsDiv.classList.add("d-none");
+        });
+    }
+  });
+});
+</script>
+
+{% endblock %}

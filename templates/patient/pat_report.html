@@ -1,0 +1,240 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card shadow-lg p-4">
+        <h2 class="text-center mb-4">Add Patient Details</h2>
+        <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            {% csrf_token %}
+
+            <div class="row">
+                <!-- Name -->
+                <div class="col-md-6">
+                    <label for="name" class="form-label">Patient Name</label>
+                    <input type="text" class="form-control" name="name" id="name" required>
+                </div>
+
+                <!-- Date of Birth -->
+                <div class="col-md-6">
+                    <label for="dob" class="form-label">Date of Birth: {{ medical_report.date_of_birth }}</label>
+
+                    <input type="date" id="dob" class="form-control" name="dob" required >
+                </div>
+                
+
+                 <!-- Date of Birth (Formatted as DD-MM-YYYY) -->
+                <!-- <div class="col-md-6">
+                     <label for="date_of_birth" class="form-label">Date of Birth {{ medical_report.date_of_birth|date:"d-m-Y" }}</label>
+                        <input type="date" id="dob" name="dob" value="{{ medical_report.date_of_birth|date:'Y-m-d' }}" required>
+
+                </div> -->
+
+                
+                <script>
+                    // Set max attribute to today's date
+                    document.getElementById("dob").max = new Date().toISOString().split("T")[0];
+
+                </script>
+                
+            </div>
+
+            <div class="row mt-3">
+                <!-- Gender -->
+                <div class="col-md-6">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select class="form-select" name="gender" id="gender" required>
+                        {% for value, label in gender_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Blood Group -->
+                <div class="col-md-6">
+                    <label for="blood_group" class="form-label">Blood Group</label>
+                    <select class="form-select" name="blood_group" id="blood_group" required>
+                        {% for value, label in blood_group_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <!-- Marital Status -->
+                <div class="col-md-6">
+                    <label for="marital_status" class="form-label">Marital Status</label>
+                    <select class="form-select" name="marital_status" id="marital_status" required>
+                        {% for value, label in marital_status_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Relationship -->
+                <div class="col-md-6">
+                    <label for="relationship" class="form-label">Relationship</label>
+                    <select class="form-select" name="relationship" id="relationship" required>
+                        {% for value, label in relationship_choices %}
+                            <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <!-- Allergies -->
+                <div class="col-md-6">
+                    <label for="allergies" class="form-label">Allergies</label>
+                    <input type="text" class="form-control" name="allergies" id="allergies">
+                </div>
+
+                <!-- Existing Conditions -->
+                <div class="col-md-6">
+                    <label for="existing_conditions" class="form-label">Existing Conditions</label>
+                    <input type="text" class="form-control" name="existing_conditions" id="existing_conditions">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <!-- Ongoing Medications -->
+                <div class="col-md-6">
+                    <label for="ongoing_medications" class="form-label">Ongoing Medications</label>
+                    <input type="text" class="form-control" name="ongoing_medications" id="ongoing_medications">
+                </div>
+
+                <!-- Previous Surgeries -->
+                <div class="col-md-6">
+                    <label for="previous_surgeries" class="form-label">Previous Surgeries</label>
+                    <input type="text" class="form-control" name="previous_surgeries" id="previous_surgeries">
+                </div>
+            </div>
+
+            <div class="row mt-3">
+                <!-- Medical Report File -->
+                <div class="col-md-12">
+                    <label for="medical_report_file" class="form-label">Upload Medical Report (PDF only)</label>
+                    <input type="file" class="form-control" name="medical_report_file" id="medical_report_file" >
+                    <small id="fileError" class="text-danger"></small>
+                </div>
+            </div>
+
+          <!-- Submit Button -->
+          <div class="text-center mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Submit Details</button>
+        </div>
+    </form>
+
+    {% if messages %}
+    {% for message in messages %}
+        <div class="alert {% if message.tags == 'success' %}alert-success{% else %}alert-danger{% endif %}">
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+
+    <a href="{% url 'patient_home' %}" class="back-button">Back</a>
+    <style>
+        .back-button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin-right: 1170px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+        
+        .back-button:hover {
+            background-color: #0056b3;
+        }
+        </style>
+    </div>
+</div>
+
+<!-- Bootstrap Validation Script -->
+<script>
+    (function () {
+        'use strict'
+        var forms = document.querySelectorAll('.needs-validation')
+
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+
+    document.addEventListener("DOMContentLoaded", function () {
+    let fileInput = document.getElementById("medical_report_file");
+    let fileError = document.getElementById("fileError");
+
+    fileInput.addEventListener("change", function () {
+        if (fileInput.files.length > 0) {
+            let allowedExtension = "pdf";
+            let fileName = fileInput.value.split(".").pop().toLowerCase();
+            let fileSize = fileInput.files[0].size / (1024 * 1024); // Convert to MB
+
+            if (fileName !== allowedExtension) {
+                fileError.textContent = "Only PDF files are allowed.";
+                fileInput.value = "";
+            } else if (fileSize > 25) {
+                fileError.textContent = "File size should not exceed 25MB.";
+                fileInput.value = "";
+            } else {
+                fileError.textContent = "";
+            }
+        } else {
+            fileError.textContent = "";
+        }
+    });
+});
+
+// });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const relationshipField = document.getElementById("relationship");
+    const nameField = document.getElementById("name");
+    const genderField = document.getElementById("gender");
+
+    // Get patient details from Django template
+    const patientName = "{{ patient_name|default:'' }}";
+    const patientGender = "{{ patient_gender|default:'' }}";
+
+    relationshipField.addEventListener("change", function() {
+        if (this.value === "self") {
+            nameField.value = patientName;
+            genderField.value = patientGender;
+            nameField.readOnly = true;
+            genderField.readOnly = true;
+        } else {
+            nameField.value = "";
+            genderField.value = "";
+            nameField.readOnly = false;
+            genderField.readOnly = false;
+        }
+    });
+});
+
+document.addEventListener("DOMContentLoaded", function() {
+    let dobField = document.getElementById("dob");
+    let rawDate = dobField.value;  // Get YYYY-MM-DD
+
+    if (rawDate) {
+        let formattedDate = new Date(rawDate).toISOString().split("T")[0];  // Keep YYYY-MM-DD format
+        dobField.value = formattedDate;
+    }
+});
+
+</script>
+{% endblock %}

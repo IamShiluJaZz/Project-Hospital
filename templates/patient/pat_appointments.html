@@ -1,0 +1,206 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appointment Booking</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container mt-4">
+        <h2 class="text-center">Welcome, <span id="patient-name"></span>{{ user.username }}</h2><!--{{ patient.name }}-->
+
+        <!-- CSRF Token -->
+        <form method="POST" action="{% url 'appointment_booking' %}">
+            {% csrf_token %}
+
+            <!-- Hidden field for patient_id -->
+            <input type="hidden" id="patient-id" name="patient_id" value="{{ patient.id }}">
+
+            <!-- Hidden field for doctor_name -->
+            <input type="hidden" id="patient-mr" name="patient_mr" value="{{ patient.mr_number }}">
+
+            <input type="hidden" id="doctor_name" name="doctor_name">
+
+            <!-- Hidden field for appointment day -->
+            <input type="hidden" id="appointment-day" name="day">
+
+            <!-- Select Relationship -->
+            <div class="mb-3">
+                <label class="form-label">Select Relationship:</label>
+                <select name="relationship" class="form-select" id="relationship-select">
+                    <option value="">Select</option>
+                    {% for key, value in report_relations %}
+                        <option value="{{ key }}">{{ value }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <!-- Display the selected report -->
+            <div id="report-card" class="card p-3 mt-4 d-none">
+                <h5>Medical Report</h5>
+                <p><strong>Patient Name : </strong> <span id="report-name"></span></p>
+                <p><strong>MR No:</strong> <span id="report-mr"></span></p>
+            </div>
+
+            <!-- Select Department and Doctors -->
+            <div class="row mt-4">
+                <div class="col-md-3">
+                    <h5>Select Speciality</h5>
+                    <div class="form-check">
+                        {% for department in departments %}
+                            <input type="checkbox" name="specialty" class="form-check-input" id="specialty_{{ department.id }}" value="{{ department.id }}" onclick="showDoctors()">
+                            <label class="form-check-label" for="specialty_{{ department.id }}">{{ department.specialization_name }}</label>
+                            <br>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Doctor List based on selected department -->
+                <div class="col-md-9">
+                    <div class="row" id="doctor-list">
+                        <!-- Doctors will be displayed here dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Appointment Form -->
+            <div id="appointment-form" class="card p-3 mt-4 d-none">
+                <h5 id="selected-doctor">Select Appointment for Dr. <span id="doctor-name-display"></span></h5>
+
+                <label class="mt-2">Appointment Date:</label>
+                <input type="date" id="appointment-date" name="appointment_date" class="form-control" required>
+
+                <label class="mt-2">Symptoms:</label>
+                <input type="text" name="symptoms" class="form-control" required>
+
+                <label class="mt-2">Known Diseases:</label>
+                <input type="text" name="diseases" class="form-control" required>
+
+                <button type="button" class="btn btn-success mt-3" onclick="confirmBooking()">Confirm Appointment</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Show the selected report card based on relationship
+        document.getElementById('relationship-select').addEventListener('change', function() {
+            var relationship = this.value;
+            if (relationship) {
+                console.log(`Fetching report for relationship: ${relationship}`);
+                fetch(`/get_report/${relationship}/`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            document.getElementById('report-card').classList.remove('d-none');
+                            document.getElementById('report-name').innerText = data.report.name;
+                            document.getElementById('report-mr').innerText = data.report.patient_id;
+                            document.getElementById('patient-id').value = data.report.patient_id;
+                            document.getElementById('patient-mr').value = data.report.patient_id;
+                        } else {
+                            console.log('Report not found');
+                        }
+                    })
+                    .catch(error => console.error('Error fetching report:', error));
+            } else {
+                document.getElementById('report-card').classList.add('d-none');
+            }
+        });
+
+        function showDoctors() {
+            let selectedSpecialties = [];
+            document.querySelectorAll('input[name="specialty"]:checked').forEach(checkbox => {
+                selectedSpecialties.push(checkbox.value);
+            });
+
+            if (selectedSpecialties.length === 0) {
+                document.getElementById('doctor-list').innerHTML = '';
+                return;
+            }
+
+            fetch(`/get_doctors/${selectedSpecialties.join(',')}/`)
+                .then(response => response.json())
+                .then(data => {
+                    let doctorListHtml = '';
+                    data.doctors.forEach(doctor => {
+                        let availabilityHtml = '';
+
+                        doctor.availabilities.forEach(availability => {
+                            let slotsHtml = '';
+
+                            availability.slots.forEach(slot => {
+                                let startDate = new Date(slot.start_date);
+                                let endDate = new Date(slot.end_date);
+
+                                slotsHtml += `
+                                    <div>
+                                        <strong>${slot.day}:</strong> 
+                                        ${startDate.toLocaleDateString()} to ${endDate.toLocaleDateString()} (${availability.shift}) - ${slot.slot_count} slots available
+                                        <button type="button" class="btn btn-info mt-2" onclick="setAppointmentDate('${startDate.toISOString()}', '${endDate.toISOString()}', '${doctor.username}')">Book Now</button>
+                                    </div>
+                                `;
+                            });
+
+                            availabilityHtml += `<div>${slotsHtml}</div>`;
+                        });
+
+                        doctorListHtml += `
+                            <div class="col-md-4">
+                                <div class="card doctor-card p-2">
+                                    <div class="card-body">
+                                        <h5 class="card-title">${doctor.username}</h5>
+                                        <p class="card-text">Specialization: ${doctor.specialization}</p>
+                                        ${availabilityHtml}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    document.getElementById('doctor-list').innerHTML = doctorListHtml;
+                })
+                .catch(error => console.error('Error fetching doctors:', error));
+        }
+
+        function showAppointmentForm(doctorName) {
+            document.getElementById("appointment-form").classList.remove("d-none");
+            document.getElementById("doctor-name-display").innerText = doctorName;
+            document.getElementById('doctor_name').value = doctorName;
+        }
+
+        function setAppointmentDate(startDate, endDate, doctorName) {
+            let dateField = document.getElementById('appointment-date');
+            dateField.setAttribute("min", startDate.split('T')[0]);
+            dateField.setAttribute("max", endDate.split('T')[0]);
+
+            // Ensure doctor name is set properly
+            showAppointmentForm(doctorName);
+        }
+
+        function confirmBooking() {
+    const appointmentDate = document.getElementById('appointment-date').value;
+    const symptoms = document.querySelector('input[name="symptoms"]').value;
+    const diseases = document.querySelector('input[name="diseases"]').value;
+    const patientMr = document.querySelector('input[name="patient_mr"]')?.value || "N/A"; 
+
+    console.log(`Appointment Date: ${appointmentDate}`);
+    console.log(`Symptoms: ${symptoms}`);
+    console.log(`Known Diseases: ${diseases}`);
+    console.log(`Patient MR Number: ${patientMr}`);
+
+    if (!appointmentDate) {
+        alert('Please select a date.');
+        return;
+    }
+
+    document.getElementById('appointment-day').value = appointmentDate;
+    document.querySelector('form').submit();
+}
+
+    </script>
+</body>
+</html>
+{% endblock %}

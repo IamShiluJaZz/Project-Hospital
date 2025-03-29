@@ -1,0 +1,55 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}Patient Management{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'admin/css/style.css' %}" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        {% block content %}
+        <div class="card shadow-lg p-5 border-0 rounded-4 w-50 mx-auto">
+            <h3 class="text-center mb-4 text-primary">Manage Profile</h3>
+            
+            <div class="mb-3">
+                <strong>Full Name:</strong>
+                <p class="text-muted">{{ patient.fk_user.username }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Email:</strong>
+                <p class="text-muted">{{ patient.fk_user.email }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Phone:</strong>
+                <p class="text-muted">{{ patient.fk_user.phone }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Emergency Contact:</strong>
+                <p class="text-muted">{{ patient.emergency_contact }}</p>
+            </div>
+            <div class="mb-3">
+                <strong>Gender:</strong>
+                <p class="text-muted">{{ patient.get_gender_display }}</p>
+            </div>
+            <div class="mb-4">
+                <strong>Address:</strong>
+                <p class="text-muted">{{ patient.address }}</p>
+            </div>
+            
+            <div class="text-center d-flex justify-content-center gap-3">
+                <a href="{% url 'edit_patient_register' %}" class="btn btn-outline-primary btn-lg rounded-pill">Update Profile</a>
+                <a href="{% url 'change_password' %}" class="btn btn-outline-warning btn-lg rounded-pill">Change Password</a>
+            </div><br>
+            <div class="my-2 d-flex justify-content-between align-items-center">
+                <a href="{% url 'patient_home' %}" class="auth-link text-primary">Back to Dashboard</a>
+            </div>
+        </div>
+        <div><br></div>
+        {% endblock %}
+    </div>
+</body>
+</html>

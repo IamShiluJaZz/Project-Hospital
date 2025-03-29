@@ -1,0 +1,95 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <h2>My Prescriptions</h2>
+    
+    {% if prescriptions %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Patient Name</th>
+                    <th>Medicine</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Frequency</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prescription in prescriptions %}
+                <tr>
+                    <td>{{ prescription.date }}</td>
+                    <td>{{ prescription.patient_name }}</td>
+                    <td>{{ prescription.medicine.medicine_name }}</td>
+                    <td>{{ prescription.category.cat_name }}</td>
+                    <td>{{ prescription.quantity }}</td>
+                    <td>{{ prescription.get_frequency_display }}</td>
+                    <td>{{ prescription.note }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No prescriptions found for patient ID: {{ patient_id }}</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>My Lab Tests</h2>
+    {% if lab_tests %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Test Name</th>
+                    <th>Result Analysis</th>
+                    <th>Download Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in lab_tests %}
+                <tr>
+                    <td>{{ test.created_date }}</td>
+                    <td>{{ test.test.test_name }}</td>
+                    <td>{{ test.test_result_analysis }}</td>
+                    <td><a href="{{ test.test_upload.url }}" download>Download</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No lab test reports found.</p>
+    {% endif %}
+
+    <hr>
+
+    <h2>My Radiology Tests</h2>
+    {% if radio_tests %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Test Name</th>
+                    <th>Result Analysis</th>
+                    <th>Download Report</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for test in radio_tests %}
+                <tr>
+                    <td>{{ test.created_date }}</td>
+                    <td>{{ test.test.test_name }}</td>
+                    <td>{{ test.test_result_analysis }}</td>
+                    <td><a href="{{ test.test_upload.url }}" download>Download</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No radiology test reports found.</p>
+    {% endif %}
+</div>
+{% endblock %}

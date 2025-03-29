@@ -1,0 +1,124 @@
+{% extends 'admin/admin_layout.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+  <div class="row">
+    <!-- Total Doctors -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-danger card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-heart-pulse card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Total Doctors <i class="bi bi-activity float-end"></i></h4>
+          <h2 class="mb-5">{{ doctor_count }}</h2>
+          <h6 class="card-text">Active: {{ active_doctor_count }}</h6>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Total Patients -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-info card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-people card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Total Patients <i class="bi bi-person-plus float-end"></i></h4>
+          <h2 class="mb-5">{{ patient_count }}</h2>
+          <h6 class="card-text">Active: {{ active_patient_count }}</h6>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Total Nurses -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-success card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-hospital card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Total Nurses <i class="bi bi-heart-pulse float-end"></i></h4>
+          <h2 class="mb-5">{{ nurse_count }}</h2>
+          <h6 class="card-text">Active: {{ active_nurse_count }}</h6>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Total Appointments -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-warning card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-calendar-check card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Total Appointments <i class="bi bi-clock-history float-end"></i></h4>
+          <h2 class="mb-5">{{ appointment_count }}</h2>
+          <h6 class="card-text">Today: {{ today_appointment_count }}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row">
+    <!-- Total Pharmacists -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-primary card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-capsule card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Pharmacists <i class="bi bi-prescription float-end"></i></h4>
+          <h2 class="mb-5">{{ pharmacist_count }}</h2>
+          <h6 class="card-text">Active: {{ active_pharmacist_count }}</h6>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Lab Technicians -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-secondary card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-droplet card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Lab Technicians <i class="bi bi-flask float-end"></i></h4>
+          <h2 class="mb-5">{{ lab_count }}</h2>
+          <h6 class="card-text">Active: {{ active_lab_count }}</h6>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Radiologists -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-dark card-img-holder text-white">
+        <div class="card-body">
+          <i class="bi bi-x-ray card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Radiologists <i class="bi bi-radioactive float-end"></i></h4>
+          <h2 class="mb-5">{{ radio_count }}</h2>
+          <h6 class="card-text">Active: {{ active_radio_count }}</h6>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Total Prescriptions -->
+    <div class="col-md-3 stretch-card grid-margin">
+      <div class="card bg-gradient-light card-img-holder text-dark">
+        <div class="card-body">
+          <i class="bi bi-file-medical card-icon-absolute"></i>
+          <h4 class="font-weight-normal mb-3">Prescriptions <i class="bi bi-file-earmark-medical float-end"></i></h4>
+          <h2 class="mb-5">{{ prescription_count }}</h2>
+          <h6 class="card-text">Today: {{ today_prescription_count }}</h6>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    .card-icon-absolute {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    font-size: 3rem;
+    opacity: 0.2;
+    z-index: 1;
+}
+
+.card-body {
+    position: relative;
+    z-index: 2;
+}
+  </style>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+    <header class="text-center mb-4">
+        <h1><i class="bi bi-hospital"></i> About Rivershore Hospital</h1>
+    </header>
+
+    <section class="container">
+        <div class="row text-center mb-4">
+            <div class="col-md-12">
+                <h2><i class="bi bi-heart-pulse"></i> Our Commitment to Healthcare Excellence</h2>
+                <p>Rivershore Hospital is a premier healthcare institution dedicated to providing high-quality medical services with a patient-centered approach. Located in Poonoor, Kozhikode, we integrate advanced technology with expert care to enhance hospital management and patient experience.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-12">
+                <h2><i class="bi bi-info-circle"></i> Hospital Overview</h2>
+                <p>Rivershore Hospital, situated in Poonoor, Kozhikode, is home to a team of 22 dedicated doctors, supported by 19 trainees and 110 skilled staff members. We are committed to delivering exceptional medical care through well-equipped facilities and a compassionate approach, ensuring that every patient receives the best possible treatment. Our hospital is designed to provide a seamless healthcare experience, combining advanced medical technology with personalized care. With a strong focus on patient safety, comfort, and well-being, we continuously strive to enhance our services and uphold the highest standards of medical excellence.</p>
+            </div>
+        </div>
+
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <h2><i class="bi bi-building"></i> Our Departments</h2>
+            </div><br><br><br><br>
+            <div class="col-md-6">
+                <h4><i class="bi bi-clipboard-check"></i> Clinical Departments</h4>
+                <div class="row row-cols-2 g-2">
+                    <div class="col"><div class="card p-2"><i class="bi bi-person"></i> Doctors</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-hospital"></i> Nursing</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-capsule"></i> Pharmacy</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-file-medical"></i> Laboratory</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-image"></i> Radiology</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-droplet"></i> Blood Storage</div></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <h4><i class="bi bi-clipboard-check"></i> Non-Clinical Departments</h4>
+                <div class="row row-cols-2 g-2">
+                    <div class="col"><div class="card p-2"><i class="bi bi-person"></i> Administration</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-hospital"></i> Public Relation</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-capsule"></i> Finance</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-file-medical"></i> Front Office</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-image"></i> IT</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-droplet"></i> Marketing</div></div>
+                </div>
+            </div>
+        </div><br><br>
+        
+        <div class="row mt-4">
+            <div class="col-md-12 text-center">
+                <h2><i class="bi bi-heart"></i> Specialized Medical Services</h2>
+            </div><br><br><br><br>
+            <div class="col-md-6">
+                <div class="row row-cols-2 g-2">
+                    <div class="col"><div class="card p-2"><i class="bi bi-heart-pulse"></i> Cardiology</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-activity"></i> Emergency Medicine</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-ear"></i> ENT</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-person-bounding-box"></i> Dermatology</div></div>
+                    
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="row row-cols-2 g-2">
+                    <div class="col"><div class="card p-2"><i class="bi bi-scissors"></i> General Surgery</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-emoji-smile"></i> Pediatrics</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-prescription"></i> General Medicine</div></div>
+                    <div class="col"><div class="card p-2"><i class="bi bi-gender-female"></i> Gynecology</div></div>
+                </div>
+            </div>
+        </div><br><br>
+        
+        <div class="row text-center mt-4">
+            <div class="col-md-12">
+                <h2><i class="bi bi-robot"></i> Advancing with Technology</h2>
+                <p>Our hospital management system is undergoing key upgrades, including an AI-powered chatbot for seamless appointment bookings. This system will replace the third-party Gotoken application, allowing patients to check doctor availability and book appointments without errors.</p>
+            </div>
+        </div>
+        
+        <div class="row text-center mt-4">
+            <div class="col-md-12">
+                <h2><i class="bi bi-envelope"></i> Contact Us</h2>
+                <p><strong><i class="bi bi-envelope-at"></i> Email:</strong> <a href="mailto:info@rivershorehospital.com">info@rivershorehospital.com</a></p>
+                <p><strong><i class="bi bi-telephone"></i> Phone:</strong> <a href="tel:+914962646300">0496 2646300</a></p>
+                <p><strong><i class="bi bi-globe"></i> Website:</strong> <a href="https://www.rivershorehospital.com" target="_blank">www.rivershorehospital.com</a></p>
+            </div>
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,108 @@
+{% extends 'radio/radio_lay.html' %}
+{% load static %}
+{% block content %}
+
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <div class="card shadow-lg p-4">
+                        <h3 class="text-center mb-4">Create Radio Test</h3>
+
+                        <!-- Display error messages -->
+                        <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+
+                        <form method="post" enctype="multipart/form-data" id="radioTestForm">
+                            {% csrf_token %}
+
+                            <div class="mb-3">
+                                <label class="form-label">Test Name:</label>
+                                <select name="test_name" class="form-select" required>
+                                    <option value="">Select Test Name</option>
+                                    {% for value, label in test_names %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Test Type:</label>
+                                <select name="test_type" class="form-select" required>
+                                    <option value="">Select Test Type</option>
+                                    {% for value, label in test_types %}
+                                        <option value="{{ value }}">{{ label }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Price:</label>
+                                <input type="number" name="price" id="price" class="form-control" step="0.01" required>
+                                <small class="text-danger d-none" id="price-error">Price cannot be negative or zero.</small>
+                            </div>
+                            
+
+                            <div class="mb-3">
+                                <label class="form-label">Description:</label>
+                                <textarea name="description" class="form-control" rows="3"></textarea>
+                            </div>
+
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary" id="submit-btn" disabled>Create Test</button>
+                                <a href="{% url 'radio_test_list' %}" class="btn btn-secondary">Cancel</a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('radioTestForm');
+    const submitBtn = document.getElementById('submit-btn');
+    const priceInput = document.getElementById('price');
+    const priceError = document.getElementById('price-error');
+
+    function validatePrice() {
+        const price = parseFloat(priceInput.value);
+
+        if (priceInput.value === "") {
+            priceError.classList.add('d-none');
+            submitBtn.disabled = true;
+            return;
+        }
+
+        if (isNaN(price) || price <= 0) {
+            priceError.classList.remove('d-none');
+            submitBtn.disabled = true;
+        } else {
+            priceError.classList.add('d-none');
+            submitBtn.disabled = false;
+        }
+    }
+
+    // Validate on input
+    priceInput.addEventListener('input', validatePrice);
+
+    // Prevent submit if invalid
+    form.addEventListener('submit', function(e) {
+        validatePrice();
+        if (submitBtn.disabled) {
+            e.preventDefault();
+            alert("Please enter a valid positive price before submitting.");
+        }
+    });
+
+    // Initial check
+    validatePrice();
+});
+
+
+</script>
+
+{% endblock %}

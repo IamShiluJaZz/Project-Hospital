@@ -1,0 +1,120 @@
+{% extends 'ph/ph_lay.html' %}
+{% load custom_filters %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <h3>Medicines for {{ prescription.patient_name }}</h3><br>
+                    <p>Patient MR No : {{ prescription.patient_id}}</p>
+                    <table class="table table-bordered mt-3">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Medicine Name</th>
+                                <th>Category</th>
+                                <th>Quantity</th>
+                                <th>Price</th>
+                                <th>Frequency</th>
+                                <th>Dispensed</th>
+                                <th>Processed At</th>
+                                <th>Additional Instruction</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for med in medicines %}
+                                {% with dispensed_info=dispensed_data|get_item:med.medicine.id %}
+                                <tr id="row-{{ med.medicine.id }}">
+                                    <td>{{ med.medicine.medicine_name.medicine_name }}</td>
+                                    <td>{{ med.category.cat_name }}</td>
+                                    <td>{{ med.quantity }}</td>
+                                    <td style="text-align: right; width: 100px;">{{ med.medicine.price }}</td>
+                                    <td>{{ med.get_frequency_display }}</td>
+                                    <td>
+                                        <input type="checkbox" class="dispense-checkbox" data-med-id="{{ med.medicine.id }}"
+                                               {% if dispensed_info and dispensed_info.dispensed %}checked{% endif %}>
+                                    </td>
+                                    <td>
+                                        {% if dispensed_info %}
+                                            {{ dispensed_info.processed_at|date:"F d, Y, h:i A" }}
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <textarea class="form-control instructions" data-med-id="{{ med.medicine.id }}" rows="2"
+                                                  placeholder="Enter additional instructions">{% if dispensed_info %}{{ dispensed_info.additional_instructions }}{% endif %}</textarea>
+                                    </td>
+                                </tr>
+                                {% endwith %}
+                            {% empty %}
+                                <tr>
+                                    <td colspan="8" class="text-center">No Medicines Found</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    <div class="d-flex justify-content-end gap-3 mt-3">
+                        <button id="save-btn" class="btn btn-primary">Save </button>
+                        
+                    </div>
+                    <a href="{% url 'Pharmacist_prescription' %}" class="btn btn-secondary">Back</a>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById("save-btn").addEventListener("click", function () {
+        let selectedMedicines = [];
+        let prescriptionId = "{{ prescription.id }}";
+
+        document.querySelectorAll(".dispense-checkbox").forEach((checkbox) => {
+            let medId = checkbox.dataset.medId;
+            let isChecked = checkbox.checked;
+            let instructions = document.querySelector(`.instructions[data-med-id="${medId}"]`).value.trim();
+
+            selectedMedicines.push({
+                med_id: medId,
+                prescription_id: prescriptionId,
+                dispensed: isChecked,
+                additional_instructions: instructions
+            });
+        });
+
+        if (selectedMedicines.length === 0) {
+            alert("No medicines selected!");
+            return;
+        }
+
+        fetch("{% url 'process_medicines' prescription.id %}", { 
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": "{{ csrf_token }}"
+            },
+            body: JSON.stringify({ medicines: selectedMedicines })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert("Medicines Dispensed Successfully!");
+                location.reload();
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(error => console.error("Error:", error));
+    });
+</script>
+{% endblock %}
