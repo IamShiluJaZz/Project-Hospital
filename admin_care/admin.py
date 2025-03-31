@@ -212,6 +212,16 @@ from .models import *
 
 admin.site.register(Final_PatientReport)
 
+admin.site.register(Nurse)
+
+admin.site.register(Pharamcist)
+
+admin.site.register(Lab)
+
+admin.site.register(Radio)
+
+
+
 
 
 

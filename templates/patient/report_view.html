@@ -1,0 +1,120 @@
+{% extends 'patient/patient_layout.html' %}
+{% load static %}
+
+{% block content %}
+<div class="pcoded-content">
+    <div class="pcoded-inner-content">
+        <div class="main-body">
+            <div class="page-wrapper">
+                <div class="container mt-4">
+                    <h2 class="text-primary text-center">Patient Bill Overview</h2>
+
+                    <!-- Patient Selection -->
+                    <form method="get" class="mb-4">
+                        <label for="patient_id" class="form-label">Select Patient ID:</label>
+                        <select name="patient_id" id="patient_id" class="form-select" onchange="this.form.submit()">
+                            <option value="">-- Select Patient ID --</option>
+                            {% for pid in patient_ids %}
+                                <option value="{{ pid }}" {% if pid == selected_patient_id %} selected {% endif %}>{{ pid }}</option>
+                            {% endfor %}
+                        </select>
+                    </form>
+
+                    {% if selected_patient_id %}
+                    <h3 class="text-success text-center">Bill for Patient ID: {{ selected_patient_id }}</h3>
+
+                    <!-- Report Section -->
+                    <div class="row">
+                        <!-- Lab Reports -->
+                        <div class="col-md-4"><br><br>
+                            <h4 class="text-info">Lab Reports</h4>
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr><th>Test Name</th><th>Price (₹)</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in lab_reports %}
+                                        <tr><td>{{ report.test.test_name }}</td><td style="text-align: right; width: 100px;">{{ report.test.price }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="2" class="text-center text-muted">No lab reports found.</td></tr>
+                                    {% endfor %}
+                                    <tr class="table-warning"><td>Total</td><td style="text-align: right; width: 100px;">₹{{ lab_total }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Radio Reports -->
+                        <div class="col-md-4"><br><br>
+                            <h4 class="text-info">Radio Reports</h4>
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr><th>Test Name</th><th>Price (₹)</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for report in radio_reports %}
+                                        <tr><td>{{ report.test.test_name }}</td><td style="text-align: right; width: 100px;">{{ report.test.price }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="2" class="text-center text-muted">No radio reports found.</td></tr>
+                                    {% endfor %}
+                                    <tr class="table-warning"><td>Total</td><td style="text-align: right; width: 100px;">₹{{ radio_total }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Medicines -->
+                        <div class="col-md-4"><br><br>
+                            <h4 class="text-info">Medicines</h4>
+                            <table class="table table-hover table-bordered">
+                                <thead>
+                                    <tr><th>Medicine Name</th><th>Price (₹)</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for med in meds %}
+                                        <tr><td>{{ med.medicine_name.medicine_name }}</td><td style="text-align: right; width: 100px;" >{{ med.price }}</td></tr>
+                                    {% empty %}
+                                        <tr><td colspan="2" class="text-center text-muted">No medicines found.</td></tr>
+                                    {% endfor %}
+                                    <tr class="table-warning"><td>Total</td><td style="text-align: right; width: 100px;">₹{{ med_total }}</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Form Section -->
+                    <form method="post" class="mt-4 p-4 border rounded shadow-sm bg-light">
+                        {% csrf_token %}
+                        <label for="report_date" class="form-label">Select Report Date:</label>
+                        <input type="date" id="report_date" name="report_date" class="form-control" required>
+
+                        <!-- Payment Checkbox -->
+                        <div class="form-check my-4">
+                            <input type="checkbox" id="payment_checkbox" name="payment_done" value="yes" class="form-check-input" onclick="toggleGrandTotal()">
+                            <label class="form-check-label" for="payment_checkbox">Payment Done</label>
+                        </div>
+
+                        <!-- Grand Total Display -->
+                        <div id="grand_total_div" class="alert alert-warning d-flex justify-content-between" style="display: none;">
+                            <strong>Grand Total:</strong> ₹{{ grand_total }}
+                            <!-- <a href="{% url 'dummy_payment' patient_id=selected_patient_id %}" class="btn btn-success ms-auto">Proceed to Payment</a> -->
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" id="save_button" class="btn btn-primary" style="display: none;">Save Report</button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleGrandTotal() {
+    const checkbox = document.getElementById('payment_checkbox');
+    const grandTotalDiv = document.getElementById('grand_total_div');
+    const saveButton = document.getElementById('save_button');
+    grandTotalDiv.style.display = checkbox.checked ? 'block' : 'none';
+    saveButton.style.display = checkbox.checked ? 'block' : 'none';
+}
+</script>
+{% endblock %}

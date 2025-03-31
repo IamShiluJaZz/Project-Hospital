@@ -14,6 +14,45 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+          background-image: url("{% static 'xyz/pic1.jpg' %}");
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-attachment: fixed;
+          min-height: 100vh;
+        }
+      
+        .auth-form-light {
+          background-color: rgba(255, 255, 255, 0.3); /* Transparent white */
+          border-radius: 10px;
+          padding: 30px;
+          backdrop-filter: blur(10px); /* Optional: Glass-like effect */
+          box-shadow: 0 8px 16px rgba(231, 228, 228, 0.2); /* Adds depth */
+        }
+      
+        .content-wrapper {
+          background-color: rgba(0, 0, 0, 0.4); /* Dark overlay for contrast */
+        }
+        .auth-link {
+        font-weight: bold;
+      }
+      button {
+        
+        border: none;
+        padding: 12px;
+        font-size: 16px;
+        border-radius: 445px;
+        transition: all 0.3s ease;
+      }
+  
+      button:hover {
+        transform: translateY(-3px);
+      }
+  
+        
+      </style>
 </head>
 <body>
     <div class="container-scroller">

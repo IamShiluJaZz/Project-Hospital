@@ -1985,6 +1985,11 @@ def ph_home(request):
     return render(request,'ph/ph_dashboard.html')
 
 
+def ph_layout(request):
+    pharamacist = get_object_or_404(pharamacist, fk_user=request.user)
+    return render(request, 'ph/ph_lay.html', {'pharamacist': pharamacist})
+
+
 
 ######################################################################
 
@@ -4547,9 +4552,6 @@ def patient_reports(request):
     radio_total = sum(report.test.price for report in radio_reports)
     med_total = sum(med.price for med in meds)
 
-    #     # Redirect to dummy_payment with grand total
-    # if request.method == 'POST' and 'payment_done' in request.POST:
-    #     return redirect(f"{reverse('dummy_payment', kwargs={'patient_id': selected_patient_id})}?grand_total={grand_total}")
 
     # Calculate grand total
     grand_total = lab_total + radio_total + med_total
@@ -4587,7 +4589,7 @@ def patient_reports(request):
         'grand_total': grand_total,
     }
 
-    return render(request, 'nurse/report_view.html', context)
+    return render(request, 'patient/report_view.html', context)
 
 
 
@@ -4955,3 +4957,185 @@ def handle_radio_test_query():
 def doctor_layout(request):
     doctor = get_object_or_404(Doctor, fk_user=request.user)
     return render(request, 'doctor/doctor_lay.html', {'doctor': doctor})
+
+
+from django.utils import timezone
+from datetime import timedelta
+from .models import Appointment, Prescription, DoctorAvailableSlot
+
+def doctor_dashboard(request):
+    today = timezone.now().date()
+    
+    # Today's appointments
+    today_appointments = Appointment.objects.filter(
+        doctor=request.user.doctor,
+        day=today
+    ).order_by('day')
+    
+    # Available slots calculation
+    current_shift = get_current_shift()  # You'll need to implement this based on time of day
+    available_slots = DoctorAvailableSlot.objects.filter(
+        availability__doctor=request.user.doctor,
+        availability__start_date__lte=today,
+        availability__end_date__gte=today,
+        availability__shift=current_shift
+    ).aggregate(total=Sum('slot_count'))['total'] or 0
+    
+    # Recent prescriptions (last 7 days)
+    recent_prescriptions = Prescription.objects.filter(
+        fk_user=request.user.doctor,
+        date__gte=today - timedelta(days=7)
+    )
+    
+    # Follow-up patients (example - you might need different logic)
+    follow_up_patients = Appointment.objects.filter(
+        doctor=request.user.doctor,
+        day__gte=today,
+        symptoms__contains="follow-up"  # Or use a proper follow-up flag
+    )
+    
+    context = {
+        'today_appointments': today_appointments,
+        'available_slots': available_slots,
+        'current_shift': current_shift.capitalize(),
+        'recent_prescriptions': recent_prescriptions,
+        'follow_up_patients': follow_up_patients,
+        'today': today
+    }
+    return render(request, 'doctor/doctor_lay.html', context)
+
+def get_current_shift():
+    """Determine current shift based on time of day"""
+    hour = timezone.now().hour
+    if 6 <= hour < 12:
+        return 'morning'
+    elif 12 <= hour < 17:
+        return 'noon'
+    elif 17 <= hour < 22:
+        return 'evening'
+    else:
+        return 'night'
+
+
+from django.utils import timezone
+from datetime import timedelta
+from datetime import date
+from .models import Med
+
+@login_required
+def ph_dashboard(request):
+    recent_medicines = Med.objects.filter(fk_user=request.user).order_by('-id')[:10]
+    
+    return render(request, 'ph/ph_dashborad.html', {'recent_medicines': recent_medicines})
+
+
+from django.db.models import Sum, Count
+from django.utils import timezone
+from datetime import date
+
+def radio_dashboard(request):
+    today = date.today()
+    
+    # Today's tests
+    today_tests = Radio_TestReport.objects.filter(
+        created_date=today
+    )
+    
+    # Pending tests (without uploaded reports)
+    pending_tests = today_tests.filter(
+        test_upload=''
+    )
+    
+    # Completed tests (with uploaded reports)
+    completed_tests = today_tests.exclude(
+        test_upload=''
+    )
+    
+    # Pending reports (tests without analysis)
+    pending_reports = today_tests.filter(
+        test_result_analysis=''
+    )
+    
+    # Today's revenue
+    today_revenue = RadioTest.objects.filter(
+        radiotestreport__created_date=today
+    ).aggregate(
+        total=Sum('price')
+    )['total'] or 0
+    
+    # Test categories
+    test_categories = RadioTest.objects.values(
+        'test_type'
+    ).annotate(
+        count=Count('test_type')
+    ).order_by('-count')
+    
+    most_common_category = test_categories.first()['test_type'] if test_categories else 'N/A'
+    
+    context = {
+        'today_tests': today_tests,
+        'pending_tests': pending_tests,
+        'completed_tests': completed_tests,
+        'pending_reports': pending_reports,
+        'today_revenue': today_revenue,
+        'test_categories': test_categories,
+        'most_common_category': most_common_category,
+    }
+    return render(request, 'radio/radio_dashboard.html', context)
+
+
+from django.shortcuts import render
+from django.db.models import Count
+from .models import Prescription, RadioTest, Radio_TestReport
+
+def dashboard_view(request):
+    # Total test orders that came from prescriptions
+    total_test_orders = Prescription.objects.filter(radio__isnull=False).count()
+
+    # Total number of unique tests and their categories
+    total_tests = RadioTest.objects.count()
+    test_categories = RadioTest.objects.values('test_type').annotate(count=Count('id'))
+
+    # Test reports with uploaded files (viewable)
+    total_viewable_reports = Radio_TestReport.objects.exclude(test_upload="").count()
+
+    return render(request, 'radio_dashboard.html', {
+        'total_test_orders': total_test_orders,
+        'total_tests': total_tests,
+        'test_categories': test_categories,
+        'total_viewable_reports': total_viewable_reports
+    })
+
+from django.shortcuts import render
+from .models import Prescription, WardAssignment, Documentation_Patient
+from django.db.models import Count, Q
+from datetime import date
+
+from django.shortcuts import render
+from django.utils.timezone import localdate
+from django.db.models import Avg
+
+def nurse_dashboard(request):
+    # Total patients assigned to a ward
+    total_patients = WardAssignment.objects.count()
+
+    # Average oxygen level
+    average_oxygen = Documentation_Patient.objects.aggregate(avg_oxygen=Avg('oxygen_level'))['avg_oxygen']
+    average_oxygen = round(average_oxygen, 2) if average_oxygen else "N/A"
+
+    # Count of discharged patients
+    discharged_patients = Documentation_Patient.objects.filter(discharge_date__isnull=False).count()
+
+    # Count of patients who have vital signs recorded
+    patients_with_vitals = Documentation_Patient.objects.exclude(temperature__isnull=True, heart_rate__isnull=True, blood_pressure__isnull=True, respiratory_rate__isnull=True, oxygen_level__isnull=True).count()
+
+    context = {
+        "total_patients": total_patients,
+        "average_oxygen": average_oxygen,
+        "discharged_patients": discharged_patients,
+        "patients_with_vitals": patients_with_vitals,
+        
+    }
+
+    print(context)  # Debugging
+    return render(request, "nurse_dashboard.html", context)

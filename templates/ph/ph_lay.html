@@ -97,10 +97,15 @@
                         <ul class="nav-right">
                             <li class="user-profile header-notification">
                                 <a href="#!">
-                                    <img src="{% static 'assets/images/avatar-4.jpg' %}" class="img-radius" alt="User-Profile-Image">
-                                    <span>{{user.username}}</span>
+                                    {% if user.pharamacist.image %}
+                                        <img src="{{ user.pharamacist.image.url }}" style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" alt="User-Profile-Image">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/avatar-4.jpg' %}" style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" alt="Default-Profile-Image">
+                                    {% endif %}
+                                    <span>{{ user.username }}</span>
                                     <i class="ti-angle-down"></i>
                                 </a>
+                                
                                 <ul class="show-notification profile-notification">
                                     <li>
                                         <a href="{% url 'all_logout' %}">

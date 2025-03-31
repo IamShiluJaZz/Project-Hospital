@@ -77,6 +77,7 @@ urlpatterns = [
     # Nurse
 
     path('nurse_home/',nurse_home, name='nurse_home'),
+    # path('nurse-dashboard/', nurse_dashboard, name='nurse_dashboard'),
 
 
 
@@ -134,6 +135,7 @@ urlpatterns = [
     ############################################################
 
     path("radio-tests/", radio_test_list, name="radio_test_list"),
+    
     path("radio-tests/create/", create_radio_test, name="create_radio_test"),
     path("radio-tests/update/<int:id>/", update_radio_test, name="update_radio_test"),
     path("radio-tests/delete/<int:id>/", delete_radio_test, name="delete_radio_test"),
@@ -166,6 +168,7 @@ urlpatterns = [
   #############################################################################################
 
     path("Pharmacist_prescription/", Pharmacist_prescription, name="Pharmacist_prescription"),
+    
 
     path('process-medicines/<int:prescription_id>/', process_medicines, name='process_medicines'),
 

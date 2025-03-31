@@ -1,7 +1,7 @@
 {% extends 'nurse/nurse_lay.html' %}
 
 {% block content %}
-<div class="container">
+<div class="container" >
     <div class="row">
         <div class="col-10" style="margin-left: 230px;margin-top: 30px;">
             <div class="card shadow-sm">
@@ -17,11 +17,12 @@
                         <table class="table table-striped table-bordered">
                             <thead class="thead-dark">
                                 <tr>
-                                    <th>Patient</th>
-                                    <th>Ward</th>
-                                    <th>Bed</th>
-                                    <th>Nurse</th>
+                                    <th>Patient Name</th>
+                                    <th>Ward No</th>
+                                    <th>Bed No</th>
+                                    <th>Assigned Nurse</th>
                                     <th>Admission Date</th>
+                                    <!-- <th>Notes</th> -->
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -33,6 +34,7 @@
                                     <td>{{ assignment.bed_number }}</td>
                                     <td>{{ assignment.assigned_nurse }}</td>
                                     <td>{{ assignment.admission_date }}</td>
+                                    <!-- <td>{{ assignment.additional_notes }}</td> -->
                                     <td>
                                         <a href="{% url 'ward_assignment_edit' assignment.id %}"
                                             class="btn btn-sm btn-success">

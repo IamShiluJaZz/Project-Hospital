@@ -97,10 +97,15 @@
                         <ul class="nav-right">
                             <li class="user-profile header-notification">
                                 <a href="#!">
-                                    <img src="{% static 'assets/images/avatar-4.jpg' %}" class="img-radius" alt="User-Profile-Image">
-                                    <span>{{user.username}}</span>
+                                    {% if user.nurse.image %}
+                                        <img src="{{ user.nurse.image.url }}" style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" alt="User-Profile-Image">
+                                    {% else %}
+                                        <img src="{% static 'assets/images/avatar-4.jpg' %}" style="border-radius: 50%; width: 50px; height: 50px; object-fit: cover;" alt="Default-Profile-Image">
+                                    {% endif %}
+                                    <span>{{ user.username }}</span>
                                     <i class="ti-angle-down"></i>
                                 </a>
+                                
                                 <ul class="show-notification profile-notification">
                                     <li>
                                         <a href="{% url 'all_logout' %}">
@@ -149,7 +154,7 @@
                                         <span class="pcoded-mcaret"></span>
                                     </a>
                                 </li>
-
+<!-- 
                                 <li class="active">
                                     <a href="{% url 'patient_reports' %}">
                                         <span class="pcoded-micon"><i class="ti-home"></i><b>D</b></span>
@@ -163,7 +168,7 @@
                                         <span class="pcoded-mtext" data-i18n="nav.dash.main">Bill List</span>
                                         <span class="pcoded-mcaret"></span>
                                     </a>
-                                </li>
+                                </li> -->
                             </ul>
                         </div>
                     </nav>  

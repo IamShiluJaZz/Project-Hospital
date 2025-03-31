@@ -14,7 +14,46 @@
     <link rel="stylesheet" href="{% static 'admin/css/style.css' %}">
     <link rel="shortcut icon" href="{% static 'admin/images/favicon.png' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+      body {
+        background-image: url("{% static 'xyz/pic1.jpg' %}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        min-height: 100vh;
+      }
+    
+      .auth-form-light {
+        background-color: rgba(255, 255, 255, 0.3); /* Transparent white */
+        border-radius: 10px;
+        padding: 30px;
+        backdrop-filter: blur(10px); /* Optional: Glass-like effect */
+        box-shadow: 0 8px 16px rgba(231, 228, 228, 0.2); /* Adds depth */
+      }
+    
+      .content-wrapper {
+        background-color: rgba(0, 0, 0, 0.4); /* Dark overlay for contrast */
+      }
+      .auth-link {
+      font-weight: bold;
+    }
+    button {
+      
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 445px;
+      transition: all 0.3s ease;
+    }
 
+    button:hover {
+      transform: translateY(-3px);
+    }
+
+      
+    </style>
+    
   </head>
   <body>
     <div class="container-scroller">
@@ -55,12 +94,10 @@
                   </div>
                 </form>
                 <br>
-                <div class="my-2 d-flex justify-content-between align-items-center">
-                  <a href="{% url 'register_patient' %}" class="auth-link text-primary">SIGN UP?</a>
+                <div class="my-3 d-flex justify-content-between">
+                  <a href="{% url 'register_patient' %}" class="auth-link text-primary">Sign Up</a>
+                  <a href="#" class="auth-link text-primary">Forgot Password?</a>
                 </div>
-                  <div class="my-2 d-flex justify-content-between align-items-center">
-                    <a href="#"class="auth-link text-primary">Forgot password?</a>
-                  </div>
               </div>
             </div>
           </div>
@@ -96,8 +133,7 @@
               toggleIcon.classList.add("fa-eye");
           }
       }
-  </script>
-  
+    </script>
     <!-- endinject -->
   </body>
 </html>
